@@ -1,10 +1,13 @@
-import { Module } from '@nestjs/common';
-import { createObserveModule } from '@nestjs/observe';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { ConfigModule } from '@nestjs/config';
-import { validateEnv } from './config/env.validator';
-import { HealthModule } from './modules/health/health.module';
+import { Module } from "@nestjs/common";
+import { createObserveModule } from "@nestjs/observe";
+import { AppController } from "./app.controller";
+import { AppService } from "./app.service";
+import { ConfigModule } from "@nestjs/config";
+import { validateEnv } from "./config/env.validator";
+import { HealthModule } from "./modules/health/health.module";
+import { DatabaseModue } from "./infra/database/database.modules";
+import { AuthModules } from "./modules/authentication/auth.module";
+import { QueueModule } from "./infra/queue/queue.module";
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
@@ -13,12 +16,15 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
     // Distributed tracing, auto-correlated logs, request/job metrics, error
     // telemetry, alarms, and more — out of the box. Sign up at https://observe.nestjs.com
     ObserveModule.forRoot({
-      appKey: 'YOUR_APP_KEY',
-      appSecret: 'YOUR_APP_SECRET',
-      serviceId: 'circlepot_api',
+      appKey: "YOUR_APP_KEY",
+      appSecret: "YOUR_APP_SECRET",
+      serviceId: "circlepot_api",
     }),
-    ConfigModule.forRoot({isGlobal:true,validate:validateEnv}),
-    HealthModule
+    ConfigModule.forRoot({ isGlobal: true, validate: validateEnv }),
+    DatabaseModue,
+    HealthModule,
+    AuthModules,
+    QueueModule,
   ],
   controllers: [AppController],
   providers: [AppService],

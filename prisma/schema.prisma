@@ -1,0 +1,395 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum GroupStatus {
+  DRAFT
+  OPEN
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+enum Frequency {
+  DAILY
+  WEEKLY
+  MONTHLY
+}
+
+enum MemberStatus {
+  INVITED
+  ACCEPTED
+  DECLINED
+  REMOVED
+}
+
+enum CycleStatus {
+  UPCOMING
+  COLLECTING
+  FUNDED
+  PAID_OUT
+}
+
+enum InstallmentStatus {
+  PENDING
+  PAID
+  OVERDUE
+}
+
+enum PaymentStatus {
+  INITIATED
+  SUCCESS
+  FAILED
+  DUPLICATE
+}
+
+enum WebhookStatus {
+  RECIEVED
+  PROCESSED
+  FAILED
+}
+
+enum PayoutType {
+  CYCLE_PAYOUT
+  HELD_RELEASE
+  SAVING_WITHDRAWAL
+}
+
+enum PayoutStatus {
+  PENDING
+  PROCESSING
+  SUCCESS
+  FAILED
+}
+
+enum LedgerType {
+  CONTRIBUTION
+  LATE_FEE
+  PAYOUT
+  HELD_RELEASE
+  HELD_APPIED
+  SAVINGS_DEPOSIT
+  SAVINGS_WITHDRAWAL
+}
+
+enum SavingsStatus {
+  ACTIVE
+  MATURED
+  WIDTHDRAWN
+}
+
+enum UnlockRule {
+  AT_END_DATE
+  AT_TARGET
+}
+
+model User {
+  id              String    @id @default(uuid())
+  email           String    @unique
+  passwordHash    String
+  name            String
+  emailVerifiedAt DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  emailTokens    EmailVerificationToken[]
+  passwordResetToken  PasswordResetToken[]
+  refreshToken      RefreshToken[]
+  payoutAccounts PayoutAccount[]
+  hostedGroups   Group[]                  @relation("GroupHost")
+  memberships    Membership[]
+  ledgerEntry    LedgerEntry[]
+  savingsGoals   SavingsGoal[]
+}
+
+model EmailVerificationToken {
+  id        String    @id @default(uuid())
+  userId    String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model PasswordResetToken {
+  id   String    @id  @default(uuid())
+  userId  String
+  tokenHash   String  @unique
+  expiresAt   DateTime
+  usedAt     DateTime?
+  createdAt  DateTime   @default(now())
+
+  user  User  @relation(fields: [userId],references: [id],onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model RefreshToken {
+  id      String   @id @default(uuid())
+  userId  String
+  familyId   String
+  tokenHash   String  @unique
+  expiresAt   DateTime
+  revokedAt   DateTime?
+  createdAt   DateTime   @default(now())
+ 
+ user  User  @relation(fields: [userId],references: [id],onDelete: Cascade)
+
+ @@index([userId])
+ @@index([familyId])
+}
+
+model PayoutAccount {
+  id            String   @id @default(uuid())
+  userId        String
+  bankCode      String
+  accountNumber String
+  accountName   String
+  recipientCode String?
+  isDefault     Boolean  @default(false)
+  createdAt     DateTime @default(now())
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  payOuts Payout[]
+
+  @@unique([userId, bankCode, accountName])
+}
+
+model Group {
+  id            String      @id @default(uuid())
+  hostId        String
+  name          String
+  potKobo       Int
+  seats         Int
+  frequency     Frequency
+  startDate     DateTime
+  endDate       DateTime
+  heldPercent   Int
+  lateFreeKobo  Int
+  rulesVersion  Int         @default(0)
+  status        GroupStatus @default(DRAFT)
+  sourceGroupId String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  host        User          @relation("GroupHost", fields: [hostId], references: [id])
+  sourceGroup Group?        @relation("GroupRerun", fields: [sourceGroupId], references: [id])
+  reruns      Group[]       @relation("GroupRerun")
+  members     Membership[]
+  invites     Invite[]
+  cycles      Cycle[]
+  ledgerEntry LedgerEntry[]
+
+  @@index([hostId])
+  @@index([status])
+}
+
+model Membership {
+  id                   String       @id @default(uuid())
+  groupId              String
+  userId               String
+  status               MemberStatus @default(INVITED)
+  payoutOrder          Int?
+  acceptedAt           DateTime?
+  rulesVersionAccepted Int?
+  createdAt            DateTime     @default(now())
+
+  group        Group         @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user         User          @relation(fields: [userId], references: [id])
+  installments Installment[]
+  payouts      Payout[]
+
+  @@unique([groupId, userId])
+  @@unique([groupId, payoutOrder])
+  @@index([userId])
+}
+
+model Invite {
+  id         String    @id @default(uuid())
+  groupId    String
+  email      String
+  tokenHash  String    @unique
+  expiresAt  DateTime
+  acceptedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, email])
+}
+
+model Cycle {
+  id        String      @id @default(uuid())
+  groupId   String
+  number    Int
+  startsAt  DateTime
+  endsAt    DateTime
+  status    CycleStatus @default(UPCOMING)
+  fundedAt  DateTime?
+  createdAt DateTime    @default(now())
+
+  group        Group         @relation(fields: [groupId], references: [id])
+  installments Installment[]
+  payouts      Payout[]
+
+  @@unique([groupId, number])
+  @@index([status, endsAt])
+}
+
+model Installment {
+  id           String            @id @default(uuid())
+  cycleId      String
+  membershipId String
+  sequence     Int
+  amountKobo   Int
+  lateFeeKobo  Int               @default(0)
+  dueAt        DateTime
+  status       InstallmentStatus @default(PENDING)
+  paidAt       DateTime?
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+
+  cycle      Cycle      @relation(fields: [cycleId], references: [id])
+  membership Membership @relation(fields: [membershipId], references: [id])
+  payments   Payment[]
+
+  @@unique([cycleId, membershipId, sequence])
+  @@index([status, dueAt])
+  @@index([membershipId])
+}
+
+model Payment {
+  id                    String        @id @default(uuid())
+  installmentId         String?
+  reference             String
+  amountKobo            Int
+  status                PaymentStatus @default(INITIATED)
+  savingsDepositId      String?
+  providerTransactionId String?       @unique
+  paidAt                DateTime?
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+
+  installment    Installment?    @relation(fields: [installmentId], references: [id])
+  savingsDeposit SavingsDeposit? @relation(fields: [savingsDepositId], references: [id])
+
+  @@index([installmentId])
+  @@index([savingsDepositId])
+}
+
+model WebhookEvent {
+  id          String        @id @default(uuid())
+  provider    String
+  eventkey    String        @unique
+  eventType   String
+  payload     Json
+  status      WebhookStatus @default(RECIEVED)
+  attempts    Int           @default(0)
+  error       String?
+  recievedAt  DateTime      @default(now())
+  processedAt DateTime?
+
+  @@index([status, recievedAt])
+}
+
+model Payout {
+  id                   String       @id @default(uuid())
+  type                 PayoutType
+  cycleId              String?
+  membershipId         String?
+  payoutAccountId      String
+  amountKobo           Int
+  heldKobo             Int
+  status               PayoutStatus @default(PENDING)
+  reference            String       @unique
+  providerTransferCode String?
+  savingsGoalId        String?
+  attempts             Int          @default(0)
+  failureReason        String?
+  createdAt            DateTime     @default(now())
+  updatedAt            DateTime     @updatedAt
+
+  cycle         Cycle?        @relation(fields: [cycleId], references: [id])
+  membership    Membership?   @relation(fields: [membershipId], references: [id])
+  payoutAccount PayoutAccount @relation(fields: [payoutAccountId], references: [id])
+  savingsGoal   SavingsGoal?  @relation(fields: [savingsGoalId], references: [id])
+
+  @@unique([cycleId, membershipId, type])
+  @@unique([savingsGoalId, type])
+  @@index([status])
+  @@index([membershipId])
+}
+
+model LedgerEntry {
+  id             String     @id @default(uuid())
+  idempotencyKey String     @unique
+  groupId        String?
+  savingsGoalId  String?
+  userId         String
+  type           LedgerType
+  amountKobo     Int
+  paymentId      String?
+  payoutId       String?
+  createdAt      DateTime   @default(now())
+
+  group      Group?       @relation(fields: [groupId], references: [id])
+  user       User         @relation(fields: [userId], references: [id])
+  savingGoal SavingsGoal? @relation(fields: [savingsGoalId], references: [id])
+
+  @@index([groupId])
+  @@index([userId])
+  @@index([savingsGoalId])
+}
+
+model SavingsGoal {
+  id          String        @id @default(uuid())
+  userId      String
+  name        String
+  targetKobo  String
+  depositKobo Int
+  frequency   Frequency
+  startDate   DateTime
+  endDate     DateTime
+  unlockRule  UnlockRule
+  status      SavingsStatus @default(ACTIVE)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  user          User             @relation(fields: [userId], references: [id])
+  deposit       SavingsDeposit[]
+  payouts       Payout[]
+  ledgerEntries LedgerEntry[]
+
+  @@index([userId, status])
+}
+
+model SavingsDeposit {
+  id         String            @id @default(uuid())
+  goalId     String
+  sequence   Int
+  amountKobo Int
+  dueAt      DateTime
+  status     InstallmentStatus @default(PENDING)
+  paidAt     DateTime?
+  createdAt  DateTime          @default(now())
+
+  goal     SavingsGoal @relation(fields: [goalId], references: [id])
+  payments Payment[]
+
+  @@unique([goalId, sequence])
+  @@index([status, dueAt])
+}
