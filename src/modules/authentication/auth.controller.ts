@@ -12,6 +12,8 @@ import { RegisterDto, VerifyEmailDto } from "./dto/register.dto";
 import { ConfigService } from "@nestjs/config";
 import { LoginDto } from "./dto/login.dto";
 import type { Response, Request } from "express";
+import { ForgetPasswordDto } from "./dto/forget-password.dto";
+import { ResetPasswordDto } from "./dto/reset-password.dto";
 
 const REFRESH_COOKIE = "refresh_token";
 const COOKIE_PATH = "/api/v1/auth";
@@ -57,6 +59,34 @@ export class AuthController {
     const session = await this.authService.refresh(raw as string);
     this.setRefreshCookie(res, session.refreshToken, session.refreshExpiresAt);
     return { accessToken: session.accessToken };
+  }
+
+  @Post("forget-password")
+  @HttpCode(200)
+  forgetPassword(@Body() dto: ForgetPasswordDto) {
+    return this.authService.forgetPassword(dto.email);
+  }
+
+  @Post("reset-password")
+  @HttpCode(200)
+  async resetPassword(
+    @Body() dto: ResetPasswordDto,
+    @Res({ passthrough: true }) res: Response
+  ) {
+    const result = await this.authService.resetPassword(
+      dto.token,
+      dto.password
+    );
+    res.clearCookie(REFRESH_COOKIE, { path: COOKIE_PATH });
+    return result;
+  }
+
+  @Post("logout")
+  @HttpCode(204)
+  async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+    const raw = req.cookies?.[REFRESH_COOKIE];
+    if (typeof raw === "string" && raw) await this.authService.logout(raw);
+    res.clearCookie(REFRESH_COOKIE, { path: COOKIE_PATH });
   }
 
   private setRefreshCookie(res: Response, token: string, expires: Date) {

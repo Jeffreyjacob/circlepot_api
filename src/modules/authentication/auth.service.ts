@@ -16,6 +16,10 @@ import { LoginDto } from "./dto/login.dto";
 import { TokenService } from "./auth.tokens.service";
 
 const VERIFY_TTL_MS = 24 * 60 * 60 * 1000;
+const RESET_TTL_MS = 30 * 60 * 1000;
+const RESET_COOLDOWN_MS = 60 * 1000;
+const RESET_HOUR_MS = 60 * 60 * 1000;
+const RESET_HOURLY_LIMIT = 5;
 
 @Injectable()
 export class AuthService {
@@ -122,6 +126,109 @@ export class AuthService {
     return {
       session,
       user: { id: user.id, email: user.email, name: user.name },
+    };
+  }
+
+  async forgetPassword(email: string) {
+    const reply = {
+      message: "if an account exists for that email, we sent a reset link.",
+    };
+
+    const user = await this.prisma.user.findUniqueOrThrow({ where: { email } });
+    if (!user) return reply;
+
+    const now = Date.now();
+    const recent = await this.prisma.passwordResetToken.findMany({
+      where: {
+        userId: user.id,
+        createdAt: { gt: new Date(now - RESET_HOUR_MS) },
+      },
+    });
+
+    const tooSoon = recent.some(
+      (t) => now - t.createdAt.getTime() < RESET_COOLDOWN_MS
+    );
+    if (tooSoon || recent.length >= RESET_HOURLY_LIMIT) return reply;
+
+    const { raw, hash } = generateToken();
+
+    await this.prisma.$transaction([
+      // Only the newest link should worker, so retire the older ones
+      this.prisma.passwordResetToken.updateMany({
+        where: { userId: user.id, usedAt: null },
+        data: { usedAt: new Date() },
+      }),
+
+      this.prisma.passwordResetToken.create({
+        data: {
+          userId: user.id,
+          tokenHash: hash,
+          expiresAt: new Date(now + RESET_TTL_MS),
+        },
+      }),
+    ]);
+
+    await this.mailQueue.enqueue({
+      template: "reset-password",
+      to: user.email,
+      name: user.name,
+      url: `${this.config.getOrThrow<string>("FRONTEND_URL")}/reset-password?token=${raw}`,
+    });
+    return reply;
+  }
+
+  async resetPassword(token: string, newPassword: string) {
+    const passwordHash = await argon2.hash(newPassword, {
+      type: argon2.argon2id,
+    });
+    const tokenHash = hashToken(token);
+    const now = new Date();
+
+    const user = await this.prisma.$transaction(async (tx) => {
+      const claimed = await tx.passwordResetToken.updateMany({
+        where: { tokenHash, usedAt: null, expiresAt: { gt: now } },
+        data: { usedAt: now },
+      });
+
+      if (claimed.count !== 1)
+        throw new BadRequestException("this link is invalid or has expired");
+
+      const record = await tx.passwordResetToken.findUniqueOrThrow({
+        where: { tokenHash },
+      });
+      const updated = await tx.user.update({
+        where: { id: record.userId },
+        data: { passwordHash },
+        select: { id: true, email: true, name: true },
+      });
+
+      // they proved they control this inbox, so verify the email if it wasn't yet
+      await tx.user.updateMany({
+        where: { id: updated.id, emailVerifiedAt: null },
+        data: { emailVerifiedAt: now },
+      });
+
+      await tx.refreshToken.updateMany({
+        where: { userId: updated.id, revokedAt: null },
+        data: { revokedAt: now },
+      });
+
+      // retire any other open reset link
+      await tx.passwordResetToken.updateMany({
+        where: { userId: updated.id, usedAt: null },
+        data: { usedAt: now },
+      });
+      return updated;
+    });
+
+    await this.mailQueue.enqueue({
+      template: "password-changed",
+      to: user.email,
+      name: user.name,
+    });
+
+    return {
+      message: "Password updated. Please log in with your new password",
     };
   }
 

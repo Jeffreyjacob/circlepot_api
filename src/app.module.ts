@@ -8,6 +8,8 @@ import { HealthModule } from "./modules/health/health.module";
 import { DatabaseModue } from "./infra/database/database.modules";
 import { AuthModules } from "./modules/authentication/auth.module";
 import { QueueModule } from "./infra/queue/queue.module";
+import { UserModule } from "./modules/users/user.module";
+import { RedisModule } from "./infra/redis/redis.module";
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
@@ -25,6 +27,8 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
     HealthModule,
     AuthModules,
     QueueModule,
+    UserModule,
+    RedisModule,
   ],
   controllers: [AppController],
   providers: [AppService],

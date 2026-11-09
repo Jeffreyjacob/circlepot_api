@@ -4,6 +4,8 @@ import { MailService } from "./mail.service";
 import { Job } from "bullmq";
 import { MailJob } from "./mail.type";
 import { verifyEmailTemplate } from "./templates/verify-email.template";
+import { passwordChangedTemplate } from "./templates/password-changed.template";
+import { resetPasswordTemplate } from "./templates/reset-password";
 
 @Processor(MAIL_QUEUE)
 export class MailProcessor extends WorkerHost {
@@ -21,8 +23,10 @@ export class MailProcessor extends WorkerHost {
     switch (data.template) {
       case "verify-email":
         return verifyEmailTemplate({ name: data.name, url: data.url });
-      default:
-        throw new Error(`Unknown mail template: ${data.template}`);
+      case "password-changed":
+        return passwordChangedTemplate({ name: data.name });
+      case "reset-password":
+        return resetPasswordTemplate({ name: data.name, url: data.url });
     }
   }
 }

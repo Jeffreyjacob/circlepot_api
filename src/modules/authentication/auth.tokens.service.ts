@@ -1,9 +1,12 @@
-import { Injectable, UnauthorizedException } from "@nestjs/common";
+import { Inject, Injectable, UnauthorizedException } from "@nestjs/common";
 import { PrismaService } from "../../infra/database/database.service";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
 import { randomUUID } from "crypto";
 import { generateToken, hashToken } from "../../common/utils/token";
+import { REDIS } from "../../infra/redis/redis.constants";
+import Redis from "ioredis";
+import { revokedSessionKey } from "../../common/utils/redis-key";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const REUSE_GRACE_MS = 10_000;
@@ -13,11 +16,15 @@ export class TokenService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwt: JwtService,
-    private readonly config: ConfigService
+    private readonly config: ConfigService,
+    @Inject(REDIS) private readonly redis: Redis
   ) {}
 
   async issueSession(userId: string, familyId: string = randomUUID()) {
-    const accessToken = await this.jwt.signAsync({ sub: userId });
+    const accessToken = await this.jwt.signAsync({
+      sub: userId,
+      sid: familyId,
+    });
     const { raw, hash } = generateToken(48);
     const days = this.config.getOrThrow<number>("REFRESH_TTL_DAYS");
     const refreshExpiresAt = new Date(Date.now() + days * DAY_MS);
@@ -62,11 +69,22 @@ export class TokenService {
     if (record) await this.revokeFamily(record.familyId);
   }
 
+  async denySessions(familyId: string[]) {
+    if (familyId.length === 0) return;
+    const ttl = this.config.getOrThrow<number>("JWT_ACCESS_TTL_SECONDS");
+    const pipeline = this.redis.pipeline();
+    for (const id of familyId) {
+      pipeline.set(revokedSessionKey(id), "1", "EX", ttl);
+    }
+    await pipeline.exec();
+  }
+
   async revokeFamily(familyId: string) {
     await this.prisma.refreshToken.updateMany({
       where: { familyId, revokedAt: null },
       data: { revokedAt: new Date() },
     });
+    await this.denySessions([familyId]);
   }
 
   async revokeAllForUser(userId: string) {

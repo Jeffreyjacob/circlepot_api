@@ -14,7 +14,7 @@ export class MailService {
 
     this.transporter = createTransport({
       host: config.getOrThrow<string>("SMTP_HOST"),
-      port: config.getOrThrow<number>("SMTP_HOST"),
+      port: config.getOrThrow<number>("SMTP_PORT"),
       secure: config.getOrThrow<boolean>("SMTP_SECURE"),
       auth: user && pass ? { user, pass } : undefined,
     });

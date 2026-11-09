@@ -7,6 +7,7 @@ import {
   IsOptional,
   IsString,
   IsUrl,
+  Matches,
   Max,
   Min,
   MinLength,
@@ -27,6 +28,20 @@ export class EnvironmentVariables {
 
   @IsString()
   @IsNotEmpty()
+  @Matches(/^postgres(ql)?:\/\//, {
+    message: "DATABASE_URL must start with postgresql://",
+  })
+  DATABASE_URL!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @Matches(/^rediss?:\/\//, {
+    message: "REDIS_URL must start with redis:// or rediss://",
+  })
+  REDIS_URL!: string;
+
+  @IsString()
+  @IsNotEmpty()
   SMTP_HOST!: string;
 
   @IsString()
@@ -42,7 +57,7 @@ export class EnvironmentVariables {
 
   @IsString()
   @IsOptional()
-  SMTP_PASS: string;
+  SMTP_PASSWORD: string;
 
   @Transform(({ obj, key }) => obj[key] === "true")
   @IsBoolean()

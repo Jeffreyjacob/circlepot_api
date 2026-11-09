@@ -8,13 +8,18 @@ const app_module_1 = require("./app.module");
 const config_1 = require("@nestjs/config");
 const helmet_1 = __importDefault(require("helmet"));
 const common_1 = require("@nestjs/common");
+const cookie_parser_1 = __importDefault(require("cookie-parser"));
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule, {
         instrument: app_module_1.ObserveInstrument,
     });
     const config = app.get(config_1.ConfigService);
     app.use((0, helmet_1.default)());
-    app.enableCors({ origin: config.getOrThrow("FRONTEND_URL") });
+    app.use((0, cookie_parser_1.default)());
+    app.enableCors({
+        origin: config.getOrThrow("FRONTEND_URL"),
+        credentials: true,
+    });
     app.setGlobalPrefix("api/v1");
     app.useGlobalPipes(new common_1.ValidationPipe({ whitelist: true, transform: true }));
     app.enableShutdownHooks();
