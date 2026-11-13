@@ -4,12 +4,15 @@ import { ConfigService } from "@nestjs/config";
 import helmet from "helmet";
 import { ValidationPipe } from "@nestjs/common";
 import cookieParser from "cookie-parser";
+import { NestExpressApplication } from "@nestjs/platform-express";
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
-    instrument: ObserveInstrument,
-  });
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const config = app.get(ConfigService);
+
+  if (config.get("NODE_ENV") === "production") {
+    app.set("trust proxty", 1); // trust exactly one proxy (Render)
+  }
 
   app.use(helmet());
   app.use(cookieParser());

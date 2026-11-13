@@ -14,6 +14,7 @@ import { LoginDto } from "./dto/login.dto";
 import type { Response, Request } from "express";
 import { ForgetPasswordDto } from "./dto/forget-password.dto";
 import { ResetPasswordDto } from "./dto/reset-password.dto";
+import { Throttle } from "@nestjs/throttler";
 
 const REFRESH_COOKIE = "refresh_token";
 const COOKIE_PATH = "/api/v1/auth";
@@ -25,17 +26,20 @@ export class AuthController {
     private readonly config: ConfigService
   ) {}
 
+  @Throttle({ default: { limit: 5, ttl: 60 * 60_000 } })
   @Post("register")
   register(@Body() dto: RegisterDto) {
     return this.authService.register(dto);
   }
 
+  @Throttle({ default: { limit: 10, ttl: 15 * 60_000 } })
   @Post("verify-email")
   @HttpCode(200)
   verifyEmail(@Body() dto: VerifyEmailDto) {
     return this.authService.verifyEmail(dto.token);
   }
 
+  @Throttle({ default: { limit: 20, ttl: 15 * 60_000 } })
   @Post("login")
   @HttpCode(200)
   async login(
@@ -61,12 +65,14 @@ export class AuthController {
     return { accessToken: session.accessToken };
   }
 
+  @Throttle({ default: { limit: 5, ttl: 15 * 60_000 } })
   @Post("forget-password")
   @HttpCode(200)
   forgetPassword(@Body() dto: ForgetPasswordDto) {
     return this.authService.forgetPassword(dto.email);
   }
 
+  @Throttle({ default: { limit: 10, ttl: 15 * 60_000 } })
   @Post("reset-password")
   @HttpCode(200)
   async resetPassword(
