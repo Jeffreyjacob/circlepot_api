@@ -6,6 +6,7 @@ import { MailJob } from "./mail.type";
 import { verifyEmailTemplate } from "./templates/verify-email.template";
 import { passwordChangedTemplate } from "./templates/password-changed.template";
 import { resetPasswordTemplate } from "./templates/reset-password";
+import { groupInviteTemplate } from "./templates/group-invite.template";
 
 @Processor(MAIL_QUEUE)
 export class MailProcessor extends WorkerHost {
@@ -27,6 +28,8 @@ export class MailProcessor extends WorkerHost {
         return passwordChangedTemplate({ name: data.name });
       case "reset-password":
         return resetPasswordTemplate({ name: data.name, url: data.url });
+      case "group-invite":
+        return groupInviteTemplate({ ...data });
     }
   }
 }

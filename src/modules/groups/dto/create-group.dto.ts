@@ -1,5 +1,7 @@
 import { Transform } from "class-transformer";
 import {
+  Equals,
+  IsBoolean,
   IsEnum,
   IsInt,
   IsString,
@@ -43,4 +45,13 @@ export class CreateGroupDto {
   @Min(35)
   @Max(50)
   heldPercent!: number;
+
+  @IsInt()
+  @Min(35)
+  @Max(50)
+  lateFeeKobo!: number;
+
+  @IsBoolean()
+  @Equals(true, { message: "You must accept the group rules" })
+  acceptRules!: boolean;
 }

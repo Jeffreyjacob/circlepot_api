@@ -222,14 +222,15 @@ model Invite {
   id         String    @id @default(uuid())
   groupId    String
   email      String
-  tokenHash  String    @unique
   expiresAt  DateTime
   acceptedAt DateTime?
+  declinedAt DateTime?
   createdAt  DateTime  @default(now())
 
   group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
 
   @@unique([groupId, email])
+  @@index([email])
 }
 
 model Cycle {
