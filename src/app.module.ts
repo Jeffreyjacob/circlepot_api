@@ -11,6 +11,8 @@ import { QueueModule } from "./infra/queue/queue.module";
 import { UserModule } from "./modules/users/user.module";
 import { RedisModule } from "./infra/redis/redis.module";
 import { GroupModule } from "./modules/groups/group.module";
+import { PaystackModule } from "./infra/paystack/paystack.module";
+import { PayoutAccountModule } from "./modules/payout-accounts/payout.module";
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
@@ -30,6 +32,8 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
     QueueModule,
     UserModule,
     RedisModule,
+    PaystackModule,
+    PayoutAccountModule,
     GroupModule,
   ],
   controllers: [AppController],

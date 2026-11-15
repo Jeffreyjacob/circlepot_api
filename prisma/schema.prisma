@@ -159,6 +159,7 @@ model PayoutAccount {
   bankCode      String
   accountNumber String
   accountName   String
+  bankName      String
   recipientCode String?
   isDefault     Boolean  @default(false)
   createdAt     DateTime @default(now())

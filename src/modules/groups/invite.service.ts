@@ -76,7 +76,7 @@ export class InviteService {
 
     if (accepted + pending >= group.seats) {
       throw new ConflictException(
-        "Eveery seat is taken or has a penfing invite"
+        "Every seat is taken or has a pending invite"
       );
     }
 
@@ -120,5 +120,111 @@ export class InviteService {
         createdAt: true,
       },
     });
+  }
+
+  private async emailOf(userId: string) {
+    const user = await this.prisma.user.findUniqueOrThrow({
+      where: { id: userId },
+      select: { email: true },
+    });
+    return user.email;
+  }
+
+  async listMine(userId: string) {
+    const email = await this.emailOf(userId);
+    return this.prisma.invite.findMany({
+      where: {
+        email,
+        acceptedAt: null,
+        declinedAt: null,
+        expiresAt: { gt: new Date() },
+      },
+      orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        expiresAt: true,
+        group: {
+          select: {
+            id: true,
+            potKobo: true,
+            seats: true,
+            frequency: true,
+            startDate: true,
+            endDate: true,
+            heldPercent: true,
+            lateFreeKobo: true,
+            host: { select: { name: true } },
+          },
+        },
+      },
+    });
+  }
+
+  async accept(userId: string, inviteId: string) {
+    const email = await this.emailOf(userId);
+
+    return this.prisma.$transaction(async (tx) => {
+      const invite = await tx.invite.findUnique({ where: { id: inviteId } });
+      if (!invite || invite.email !== email)
+        throw new NotFoundException("Invite not found");
+
+      if (invite.acceptedAt || invite.declinedAt)
+        throw new ConflictException("This invite has already been answered");
+
+      if (invite.expiresAt <= new Date())
+        throw new BadRequestException("This invite has expired");
+
+      await tx.$queryRaw`SELECT id FROM "Group" WHERE id = ${invite.groupId} FOR UPDATE`;
+
+      const group = await tx.group.findUniqueOrThrow({
+        where: { id: invite.groupId },
+      });
+
+      if (group.status !== GroupStatus.OPEN)
+        throw new ConflictException("This group is no longer open");
+
+      const taken = await tx.membership.count({
+        where: { groupId: group.id, status: MemberStatus.ACCEPTED },
+      });
+
+      if (taken >= group.seats)
+        throw new ConflictException("This group is already full");
+
+      const now = new Date();
+
+      await tx.membership.upsert({
+        where: { groupId_userId: { groupId: group.id, userId } },
+        create: {
+          groupId: group.id,
+          userId,
+          status: MemberStatus.ACCEPTED,
+          acceptedAt: now,
+          rulesVersionAccepted: group.rulesVersion,
+        },
+        update: {
+          status: MemberStatus.ACCEPTED,
+          acceptedAt: now,
+          rulesVersionAccepted: group.rulesVersion,
+        },
+      });
+
+      await tx.invite.update({
+        where: { id: invite.id },
+        data: { acceptedAt: now },
+      });
+
+      return { groupId: group.id, seatsTaken: taken + 1, seats: group.seats };
+    });
+  }
+
+  async decline(userId: string, inviteId: string) {
+    const email = await this.emailOf(userId);
+    const result = await this.prisma.invite.updateMany({
+      where: { id: inviteId, email, acceptedAt: null, declinedAt: null },
+      data: { declinedAt: new Date() },
+    });
+
+    if (result.count !== 1) throw new NotFoundException("Invite not found");
+    return { message: "Invite declined" };
   }
 }

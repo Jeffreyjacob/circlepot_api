@@ -74,6 +74,9 @@ export class EnvironmentVariables {
   @IsInt()
   @Min(1)
   REFRESH_TTL_DAYS!: number;
+
+  @Matches(/^sk_(test|live)_[A-Za-z0-9]+$/)
+  PAYSTACK_SECRET_KEY!: string;
 }
 
 export function validateEnv(confifg: Record<string, unknown>) {
