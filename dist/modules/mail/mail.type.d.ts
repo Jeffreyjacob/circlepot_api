@@ -12,4 +12,13 @@ export type MailJob = {
     template: "password-changed";
     to: string;
     name: string;
+} | {
+    template: "group-invite";
+    to: string;
+    inviterName: string;
+    groupName: string;
+    potKobo: number;
+    seats: number;
+    frequency: string;
+    url: string;
 };

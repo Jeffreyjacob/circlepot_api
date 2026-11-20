@@ -108,6 +108,7 @@ exports.PayoutAccountScalarFieldEnum = {
     bankCode: 'bankCode',
     accountNumber: 'accountNumber',
     accountName: 'accountName',
+    bankName: 'bankName',
     recipientCode: 'recipientCode',
     isDefault: 'isDefault',
     createdAt: 'createdAt'
@@ -143,9 +144,9 @@ exports.InviteScalarFieldEnum = {
     id: 'id',
     groupId: 'groupId',
     email: 'email',
-    tokenHash: 'tokenHash',
     expiresAt: 'expiresAt',
     acceptedAt: 'acceptedAt',
+    declinedAt: 'declinedAt',
     createdAt: 'createdAt'
 };
 exports.CycleScalarFieldEnum = {

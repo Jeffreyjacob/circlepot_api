@@ -28,6 +28,7 @@ class EnvironmentVariables {
     JWT_ACCESS_SECRET;
     JWT_ACCESS_TTL_SECONDS;
     REFRESH_TTL_DAYS;
+    PAYSTACK_SECRET_KEY;
 }
 exports.EnvironmentVariables = EnvironmentVariables;
 __decorate([
@@ -104,6 +105,10 @@ __decorate([
     (0, class_validator_1.Min)(1),
     __metadata("design:type", Number)
 ], EnvironmentVariables.prototype, "REFRESH_TTL_DAYS", void 0);
+__decorate([
+    (0, class_validator_1.Matches)(/^sk_(test|live)_[A-Za-z0-9]+$/),
+    __metadata("design:type", String)
+], EnvironmentVariables.prototype, "PAYSTACK_SECRET_KEY", void 0);
 function validateEnv(confifg) {
     const validated = (0, class_transformer_1.plainToInstance)(EnvironmentVariables, confifg, {
         enableImplicitConversion: true,

@@ -13,5 +13,6 @@ export declare class EnvironmentVariables {
     JWT_ACCESS_SECRET: string;
     JWT_ACCESS_TTL_SECONDS: number;
     REFRESH_TTL_DAYS: number;
+    PAYSTACK_SECRET_KEY: string;
 }
 export declare function validateEnv(confifg: Record<string, unknown>): EnvironmentVariables;

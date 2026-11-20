@@ -20,6 +20,7 @@ const config_1 = require("@nestjs/config");
 const login_dto_1 = require("./dto/login.dto");
 const forget_password_dto_1 = require("./dto/forget-password.dto");
 const reset_password_dto_1 = require("./dto/reset-password.dto");
+const throttler_1 = require("@nestjs/throttler");
 const REFRESH_COOKIE = "refresh_token";
 const COOKIE_PATH = "/api/v1/auth";
 let AuthController = class AuthController {
@@ -74,6 +75,7 @@ let AuthController = class AuthController {
 };
 exports.AuthController = AuthController;
 __decorate([
+    (0, throttler_1.Throttle)({ default: { limit: 5, ttl: 60 * 60_000 } }),
     (0, common_1.Post)("register"),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -81,6 +83,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], AuthController.prototype, "register", null);
 __decorate([
+    (0, throttler_1.Throttle)({ default: { limit: 10, ttl: 15 * 60_000 } }),
     (0, common_1.Post)("verify-email"),
     (0, common_1.HttpCode)(200),
     __param(0, (0, common_1.Body)()),
@@ -89,6 +92,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], AuthController.prototype, "verifyEmail", null);
 __decorate([
+    (0, throttler_1.Throttle)({ default: { limit: 20, ttl: 15 * 60_000 } }),
     (0, common_1.Post)("login"),
     (0, common_1.HttpCode)(200),
     __param(0, (0, common_1.Body)()),
@@ -107,6 +111,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "refresh", null);
 __decorate([
+    (0, throttler_1.Throttle)({ default: { limit: 5, ttl: 15 * 60_000 } }),
     (0, common_1.Post)("forget-password"),
     (0, common_1.HttpCode)(200),
     __param(0, (0, common_1.Body)()),
@@ -115,6 +120,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], AuthController.prototype, "forgetPassword", null);
 __decorate([
+    (0, throttler_1.Throttle)({ default: { limit: 10, ttl: 15 * 60_000 } }),
     (0, common_1.Post)("reset-password"),
     (0, common_1.HttpCode)(200),
     __param(0, (0, common_1.Body)()),

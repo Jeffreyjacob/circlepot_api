@@ -10,27 +10,27 @@ export type InviteMinAggregateOutputType = {
     id: string | null;
     groupId: string | null;
     email: string | null;
-    tokenHash: string | null;
     expiresAt: Date | null;
     acceptedAt: Date | null;
+    declinedAt: Date | null;
     createdAt: Date | null;
 };
 export type InviteMaxAggregateOutputType = {
     id: string | null;
     groupId: string | null;
     email: string | null;
-    tokenHash: string | null;
     expiresAt: Date | null;
     acceptedAt: Date | null;
+    declinedAt: Date | null;
     createdAt: Date | null;
 };
 export type InviteCountAggregateOutputType = {
     id: number;
     groupId: number;
     email: number;
-    tokenHash: number;
     expiresAt: number;
     acceptedAt: number;
+    declinedAt: number;
     createdAt: number;
     _all: number;
 };
@@ -38,27 +38,27 @@ export type InviteMinAggregateInputType = {
     id?: true;
     groupId?: true;
     email?: true;
-    tokenHash?: true;
     expiresAt?: true;
     acceptedAt?: true;
+    declinedAt?: true;
     createdAt?: true;
 };
 export type InviteMaxAggregateInputType = {
     id?: true;
     groupId?: true;
     email?: true;
-    tokenHash?: true;
     expiresAt?: true;
     acceptedAt?: true;
+    declinedAt?: true;
     createdAt?: true;
 };
 export type InviteCountAggregateInputType = {
     id?: true;
     groupId?: true;
     email?: true;
-    tokenHash?: true;
     expiresAt?: true;
     acceptedAt?: true;
+    declinedAt?: true;
     createdAt?: true;
     _all?: true;
 };
@@ -90,9 +90,9 @@ export type InviteGroupByOutputType = {
     id: string;
     groupId: string;
     email: string;
-    tokenHash: string;
     expiresAt: Date;
     acceptedAt: Date | null;
+    declinedAt: Date | null;
     createdAt: Date;
     _count: InviteCountAggregateOutputType | null;
     _min: InviteMinAggregateOutputType | null;
@@ -108,9 +108,9 @@ export type InviteWhereInput = {
     id?: Prisma.StringFilter<"Invite"> | string;
     groupId?: Prisma.StringFilter<"Invite"> | string;
     email?: Prisma.StringFilter<"Invite"> | string;
-    tokenHash?: Prisma.StringFilter<"Invite"> | string;
     expiresAt?: Prisma.DateTimeFilter<"Invite"> | Date | string;
     acceptedAt?: Prisma.DateTimeNullableFilter<"Invite"> | Date | string | null;
+    declinedAt?: Prisma.DateTimeNullableFilter<"Invite"> | Date | string | null;
     createdAt?: Prisma.DateTimeFilter<"Invite"> | Date | string;
     group?: Prisma.XOR<Prisma.GroupScalarRelationFilter, Prisma.GroupWhereInput>;
 };
@@ -118,15 +118,14 @@ export type InviteOrderByWithRelationInput = {
     id?: Prisma.SortOrder;
     groupId?: Prisma.SortOrder;
     email?: Prisma.SortOrder;
-    tokenHash?: Prisma.SortOrder;
     expiresAt?: Prisma.SortOrder;
     acceptedAt?: Prisma.SortOrderInput | Prisma.SortOrder;
+    declinedAt?: Prisma.SortOrderInput | Prisma.SortOrder;
     createdAt?: Prisma.SortOrder;
     group?: Prisma.GroupOrderByWithRelationInput;
 };
 export type InviteWhereUniqueInput = Prisma.AtLeast<{
     id?: string;
-    tokenHash?: string;
     groupId_email?: Prisma.InviteGroupIdEmailCompoundUniqueInput;
     AND?: Prisma.InviteWhereInput | Prisma.InviteWhereInput[];
     OR?: Prisma.InviteWhereInput[];
@@ -135,16 +134,17 @@ export type InviteWhereUniqueInput = Prisma.AtLeast<{
     email?: Prisma.StringFilter<"Invite"> | string;
     expiresAt?: Prisma.DateTimeFilter<"Invite"> | Date | string;
     acceptedAt?: Prisma.DateTimeNullableFilter<"Invite"> | Date | string | null;
+    declinedAt?: Prisma.DateTimeNullableFilter<"Invite"> | Date | string | null;
     createdAt?: Prisma.DateTimeFilter<"Invite"> | Date | string;
     group?: Prisma.XOR<Prisma.GroupScalarRelationFilter, Prisma.GroupWhereInput>;
-}, "id" | "tokenHash" | "groupId_email">;
+}, "id" | "groupId_email">;
 export type InviteOrderByWithAggregationInput = {
     id?: Prisma.SortOrder;
     groupId?: Prisma.SortOrder;
     email?: Prisma.SortOrder;
-    tokenHash?: Prisma.SortOrder;
     expiresAt?: Prisma.SortOrder;
     acceptedAt?: Prisma.SortOrderInput | Prisma.SortOrder;
+    declinedAt?: Prisma.SortOrderInput | Prisma.SortOrder;
     createdAt?: Prisma.SortOrder;
     _count?: Prisma.InviteCountOrderByAggregateInput;
     _max?: Prisma.InviteMaxOrderByAggregateInput;
@@ -157,17 +157,17 @@ export type InviteScalarWhereWithAggregatesInput = {
     id?: Prisma.StringWithAggregatesFilter<"Invite"> | string;
     groupId?: Prisma.StringWithAggregatesFilter<"Invite"> | string;
     email?: Prisma.StringWithAggregatesFilter<"Invite"> | string;
-    tokenHash?: Prisma.StringWithAggregatesFilter<"Invite"> | string;
     expiresAt?: Prisma.DateTimeWithAggregatesFilter<"Invite"> | Date | string;
     acceptedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Invite"> | Date | string | null;
+    declinedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Invite"> | Date | string | null;
     createdAt?: Prisma.DateTimeWithAggregatesFilter<"Invite"> | Date | string;
 };
 export type InviteCreateInput = {
     id?: string;
     email: string;
-    tokenHash: string;
     expiresAt: Date | string;
     acceptedAt?: Date | string | null;
+    declinedAt?: Date | string | null;
     createdAt?: Date | string;
     group: Prisma.GroupCreateNestedOneWithoutInvitesInput;
 };
@@ -175,17 +175,17 @@ export type InviteUncheckedCreateInput = {
     id?: string;
     groupId: string;
     email: string;
-    tokenHash: string;
     expiresAt: Date | string;
     acceptedAt?: Date | string | null;
+    declinedAt?: Date | string | null;
     createdAt?: Date | string;
 };
 export type InviteUpdateInput = {
     id?: Prisma.StringFieldUpdateOperationsInput | string;
     email?: Prisma.StringFieldUpdateOperationsInput | string;
-    tokenHash?: Prisma.StringFieldUpdateOperationsInput | string;
     expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    declinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     group?: Prisma.GroupUpdateOneRequiredWithoutInvitesNestedInput;
 };
@@ -193,35 +193,35 @@ export type InviteUncheckedUpdateInput = {
     id?: Prisma.StringFieldUpdateOperationsInput | string;
     groupId?: Prisma.StringFieldUpdateOperationsInput | string;
     email?: Prisma.StringFieldUpdateOperationsInput | string;
-    tokenHash?: Prisma.StringFieldUpdateOperationsInput | string;
     expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    declinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
 export type InviteCreateManyInput = {
     id?: string;
     groupId: string;
     email: string;
-    tokenHash: string;
     expiresAt: Date | string;
     acceptedAt?: Date | string | null;
+    declinedAt?: Date | string | null;
     createdAt?: Date | string;
 };
 export type InviteUpdateManyMutationInput = {
     id?: Prisma.StringFieldUpdateOperationsInput | string;
     email?: Prisma.StringFieldUpdateOperationsInput | string;
-    tokenHash?: Prisma.StringFieldUpdateOperationsInput | string;
     expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    declinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
 export type InviteUncheckedUpdateManyInput = {
     id?: Prisma.StringFieldUpdateOperationsInput | string;
     groupId?: Prisma.StringFieldUpdateOperationsInput | string;
     email?: Prisma.StringFieldUpdateOperationsInput | string;
-    tokenHash?: Prisma.StringFieldUpdateOperationsInput | string;
     expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    declinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
 export type InviteListRelationFilter = {
@@ -240,27 +240,27 @@ export type InviteCountOrderByAggregateInput = {
     id?: Prisma.SortOrder;
     groupId?: Prisma.SortOrder;
     email?: Prisma.SortOrder;
-    tokenHash?: Prisma.SortOrder;
     expiresAt?: Prisma.SortOrder;
     acceptedAt?: Prisma.SortOrder;
+    declinedAt?: Prisma.SortOrder;
     createdAt?: Prisma.SortOrder;
 };
 export type InviteMaxOrderByAggregateInput = {
     id?: Prisma.SortOrder;
     groupId?: Prisma.SortOrder;
     email?: Prisma.SortOrder;
-    tokenHash?: Prisma.SortOrder;
     expiresAt?: Prisma.SortOrder;
     acceptedAt?: Prisma.SortOrder;
+    declinedAt?: Prisma.SortOrder;
     createdAt?: Prisma.SortOrder;
 };
 export type InviteMinOrderByAggregateInput = {
     id?: Prisma.SortOrder;
     groupId?: Prisma.SortOrder;
     email?: Prisma.SortOrder;
-    tokenHash?: Prisma.SortOrder;
     expiresAt?: Prisma.SortOrder;
     acceptedAt?: Prisma.SortOrder;
+    declinedAt?: Prisma.SortOrder;
     createdAt?: Prisma.SortOrder;
 };
 export type InviteCreateNestedManyWithoutGroupInput = {
@@ -304,17 +304,17 @@ export type InviteUncheckedUpdateManyWithoutGroupNestedInput = {
 export type InviteCreateWithoutGroupInput = {
     id?: string;
     email: string;
-    tokenHash: string;
     expiresAt: Date | string;
     acceptedAt?: Date | string | null;
+    declinedAt?: Date | string | null;
     createdAt?: Date | string;
 };
 export type InviteUncheckedCreateWithoutGroupInput = {
     id?: string;
     email: string;
-    tokenHash: string;
     expiresAt: Date | string;
     acceptedAt?: Date | string | null;
+    declinedAt?: Date | string | null;
     createdAt?: Date | string;
 };
 export type InviteCreateOrConnectWithoutGroupInput = {
@@ -345,50 +345,50 @@ export type InviteScalarWhereInput = {
     id?: Prisma.StringFilter<"Invite"> | string;
     groupId?: Prisma.StringFilter<"Invite"> | string;
     email?: Prisma.StringFilter<"Invite"> | string;
-    tokenHash?: Prisma.StringFilter<"Invite"> | string;
     expiresAt?: Prisma.DateTimeFilter<"Invite"> | Date | string;
     acceptedAt?: Prisma.DateTimeNullableFilter<"Invite"> | Date | string | null;
+    declinedAt?: Prisma.DateTimeNullableFilter<"Invite"> | Date | string | null;
     createdAt?: Prisma.DateTimeFilter<"Invite"> | Date | string;
 };
 export type InviteCreateManyGroupInput = {
     id?: string;
     email: string;
-    tokenHash: string;
     expiresAt: Date | string;
     acceptedAt?: Date | string | null;
+    declinedAt?: Date | string | null;
     createdAt?: Date | string;
 };
 export type InviteUpdateWithoutGroupInput = {
     id?: Prisma.StringFieldUpdateOperationsInput | string;
     email?: Prisma.StringFieldUpdateOperationsInput | string;
-    tokenHash?: Prisma.StringFieldUpdateOperationsInput | string;
     expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    declinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
 export type InviteUncheckedUpdateWithoutGroupInput = {
     id?: Prisma.StringFieldUpdateOperationsInput | string;
     email?: Prisma.StringFieldUpdateOperationsInput | string;
-    tokenHash?: Prisma.StringFieldUpdateOperationsInput | string;
     expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    declinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
 export type InviteUncheckedUpdateManyWithoutGroupInput = {
     id?: Prisma.StringFieldUpdateOperationsInput | string;
     email?: Prisma.StringFieldUpdateOperationsInput | string;
-    tokenHash?: Prisma.StringFieldUpdateOperationsInput | string;
     expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    declinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
 export type InviteSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
     id?: boolean;
     groupId?: boolean;
     email?: boolean;
-    tokenHash?: boolean;
     expiresAt?: boolean;
     acceptedAt?: boolean;
+    declinedAt?: boolean;
     createdAt?: boolean;
     group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>;
 }, ExtArgs["result"]["invite"]>;
@@ -396,9 +396,9 @@ export type InviteSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
     id?: boolean;
     groupId?: boolean;
     email?: boolean;
-    tokenHash?: boolean;
     expiresAt?: boolean;
     acceptedAt?: boolean;
+    declinedAt?: boolean;
     createdAt?: boolean;
     group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>;
 }, ExtArgs["result"]["invite"]>;
@@ -406,9 +406,9 @@ export type InviteSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
     id?: boolean;
     groupId?: boolean;
     email?: boolean;
-    tokenHash?: boolean;
     expiresAt?: boolean;
     acceptedAt?: boolean;
+    declinedAt?: boolean;
     createdAt?: boolean;
     group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>;
 }, ExtArgs["result"]["invite"]>;
@@ -416,12 +416,12 @@ export type InviteSelectScalar = {
     id?: boolean;
     groupId?: boolean;
     email?: boolean;
-    tokenHash?: boolean;
     expiresAt?: boolean;
     acceptedAt?: boolean;
+    declinedAt?: boolean;
     createdAt?: boolean;
 };
-export type InviteOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "groupId" | "email" | "tokenHash" | "expiresAt" | "acceptedAt" | "createdAt", ExtArgs["result"]["invite"]>;
+export type InviteOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "groupId" | "email" | "expiresAt" | "acceptedAt" | "declinedAt" | "createdAt", ExtArgs["result"]["invite"]>;
 export type InviteInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>;
 };
@@ -440,9 +440,9 @@ export type $InvitePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
         id: string;
         groupId: string;
         email: string;
-        tokenHash: string;
         expiresAt: Date;
         acceptedAt: Date | null;
+        declinedAt: Date | null;
         createdAt: Date;
     }, ExtArgs["result"]["invite"]>;
     composites: {};
@@ -505,9 +505,9 @@ export interface InviteFieldRefs {
     readonly id: Prisma.FieldRef<"Invite", 'String'>;
     readonly groupId: Prisma.FieldRef<"Invite", 'String'>;
     readonly email: Prisma.FieldRef<"Invite", 'String'>;
-    readonly tokenHash: Prisma.FieldRef<"Invite", 'String'>;
     readonly expiresAt: Prisma.FieldRef<"Invite", 'DateTime'>;
     readonly acceptedAt: Prisma.FieldRef<"Invite", 'DateTime'>;
+    readonly declinedAt: Prisma.FieldRef<"Invite", 'DateTime'>;
     readonly createdAt: Prisma.FieldRef<"Invite", 'DateTime'>;
 }
 export type InviteFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {

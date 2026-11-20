@@ -16,6 +16,7 @@ const mail_service_1 = require("./mail.service");
 const verify_email_template_1 = require("./templates/verify-email.template");
 const password_changed_template_1 = require("./templates/password-changed.template");
 const reset_password_1 = require("./templates/reset-password");
+const group_invite_template_1 = require("./templates/group-invite.template");
 let MailProcessor = class MailProcessor extends bullmq_1.WorkerHost {
     mail;
     constructor(mail) {
@@ -35,6 +36,8 @@ let MailProcessor = class MailProcessor extends bullmq_1.WorkerHost {
                 return (0, password_changed_template_1.passwordChangedTemplate)({ name: data.name });
             case "reset-password":
                 return (0, reset_password_1.resetPasswordTemplate)({ name: data.name, url: data.url });
+            case "group-invite":
+                return (0, group_invite_template_1.groupInviteTemplate)({ ...data });
         }
     }
 };

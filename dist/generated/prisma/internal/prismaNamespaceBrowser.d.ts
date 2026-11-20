@@ -80,6 +80,7 @@ export declare const PayoutAccountScalarFieldEnum: {
     readonly bankCode: "bankCode";
     readonly accountNumber: "accountNumber";
     readonly accountName: "accountName";
+    readonly bankName: "bankName";
     readonly recipientCode: "recipientCode";
     readonly isDefault: "isDefault";
     readonly createdAt: "createdAt";
@@ -118,9 +119,9 @@ export declare const InviteScalarFieldEnum: {
     readonly id: "id";
     readonly groupId: "groupId";
     readonly email: "email";
-    readonly tokenHash: "tokenHash";
     readonly expiresAt: "expiresAt";
     readonly acceptedAt: "acceptedAt";
+    readonly declinedAt: "declinedAt";
     readonly createdAt: "createdAt";
 };
 export type InviteScalarFieldEnum = (typeof InviteScalarFieldEnum)[keyof typeof InviteScalarFieldEnum];

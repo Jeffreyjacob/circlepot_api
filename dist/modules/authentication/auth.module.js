@@ -15,6 +15,10 @@ const auth_service_1 = require("./auth.service");
 const jwt_1 = require("@nestjs/jwt");
 const config_1 = require("@nestjs/config");
 const auth_tokens_service_1 = require("./auth.tokens.service");
+const throttler_1 = require("@nestjs/throttler");
+const redis_constants_1 = require("../../infra/redis/redis.constants");
+const redis_throttler_storage_1 = require("../../infra/redis/redis-throttler.storage");
+const core_1 = require("@nestjs/core");
 let AuthModules = class AuthModules {
 };
 exports.AuthModules = AuthModules;
@@ -35,9 +39,20 @@ exports.AuthModules = AuthModules = __decorate([
                     verifyOptions: { algorithms: ["HS256"] },
                 }),
             }),
+            throttler_1.ThrottlerModule.forRootAsync({
+                inject: [redis_constants_1.REDIS],
+                useFactory: (redis) => ({
+                    throttlers: [{ name: "default", ttl: 60_000, limit: 100 }],
+                    storage: new redis_throttler_storage_1.RedisThrottlerStorage(redis),
+                }),
+            }),
         ],
         controllers: [auth_controller_1.AuthController],
-        providers: [auth_service_1.AuthService, auth_tokens_service_1.TokenService],
+        providers: [
+            auth_service_1.AuthService,
+            auth_tokens_service_1.TokenService,
+            { provide: core_1.APP_GUARD, useClass: throttler_1.ThrottlerGuard },
+        ],
     })
 ], AuthModules);
 //# sourceMappingURL=auth.module.js.map
