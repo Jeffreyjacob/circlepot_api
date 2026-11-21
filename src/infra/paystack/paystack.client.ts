@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { PaystackApiError, PaystackUnavailableError } from "./paystack.error";
 
@@ -24,8 +24,9 @@ export interface TransferRecipient {
 
 @Injectable()
 export class Paystackclient {
-  private readonly baseUrl = "https/api.paystack.co";
+  private readonly baseUrl = "https://api.paystack.co";
   private readonly secretKey: string;
+  private readonly logger = new Logger(Paystackclient.name);
 
   constructor(config: ConfigService) {
     this.secretKey = config.getOrThrow<string>("PAYSTACK_SECRET_KEY");
@@ -48,6 +49,13 @@ export class Paystackclient {
         signal: AbortSignal.timeout(15000),
       });
     } catch (error: any) {
+      const reason =
+        error instanceof Error
+          ? `${error.name}: ${error.message} (${String((error.cause as { code?: string } | undefined)?.code ?? "no code")})`
+          : "unknown";
+      this.logger.warn(
+        `${init?.method ?? "GET"} ${path.split("?")[0]} failed: ${reason}`
+      );
       throw new PaystackUnavailableError("Could not reach Paystack");
     }
 

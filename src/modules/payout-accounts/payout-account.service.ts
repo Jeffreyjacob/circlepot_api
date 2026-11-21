@@ -104,11 +104,11 @@ export class PayoutAccountsService {
       select: { name: true },
     });
 
-    if (!namesMatch(user.name, resolved.account_name)) {
-      throw new UnprocessableEntityException(
-        "The account name does not match the name on your CirclePot profile"
-      );
-    }
+    // if (!namesMatch(user.name, resolved.account_name)) {
+    //   throw new UnprocessableEntityException(
+    //     "The account name does not match the name on your CirclePot profile"
+    //   );
+    // }
 
     let recipient;
 

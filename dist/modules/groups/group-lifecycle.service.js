@@ -96,7 +96,7 @@ let GroupLifeCycleService = class GroupLifeCycleService {
             const memebers = await tx.membership.findMany({
                 where: { groupId, status: client_1.MemberStatus.ACCEPTED },
                 orderBy: { payoutOrder: "asc" },
-                select: { id: true, payoutOrder: true },
+                select: { id: true, payoutOrder: true, userId: true },
             });
             if (memebers.length !== group.seats) {
                 throw new common_1.ConflictException(`All ${group.seats} seats must be filled (${memebers.length} so far)`);
@@ -106,6 +106,17 @@ let GroupLifeCycleService = class GroupLifeCycleService {
             }
             if (group.startDate < startOfTodayUTC()) {
                 throw new common_1.ConflictException("The start date has passed. Cancel this group and create a new one");
+            }
+            const withAccount = await tx.payoutAccount.findMany({
+                where: {
+                    isDefault: true,
+                    recipientCode: { not: null },
+                    userId: { in: memebers.map((m) => m.userId) },
+                },
+                select: { userId: true },
+            });
+            if (new Set(withAccount.map((a) => a.userId)).size !== memebers.length) {
+                throw new common_1.ConflictException("Every member needs a verified default payout account before the group can start");
             }
             let schedule;
             try {

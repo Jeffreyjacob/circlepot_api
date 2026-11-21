@@ -14,6 +14,7 @@ export interface TransferRecipient {
 export declare class Paystackclient {
     private readonly baseUrl;
     private readonly secretKey;
+    private readonly logger;
     constructor(config: ConfigService);
     private request;
     listNigerianBank(): Promise<PaystackBank[]>;

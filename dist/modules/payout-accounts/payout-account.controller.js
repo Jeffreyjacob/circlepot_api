@@ -19,6 +19,7 @@ const jwt_auth_guard_1 = require("../../common/guards/jwt-auth.guard");
 const current_user_decorator_1 = require("../../common/decorators/current-user.decorator");
 const add_payout_account_dto_1 = require("./dto/add-payout-account.dto");
 const banks_service_1 = require("./banks.service");
+const throttler_1 = require("@nestjs/throttler");
 let PayoutAccoutController = class PayoutAccoutController {
     payoutAccoutService;
     bankService;
@@ -26,17 +27,14 @@ let PayoutAccoutController = class PayoutAccoutController {
         this.payoutAccoutService = payoutAccoutService;
         this.bankService = bankService;
     }
+    getBanks() {
+        return this.bankService.list();
+    }
     listMine(user) {
         return this.payoutAccoutService.listMine(user.id);
     }
     add(user, dto) {
         return this.payoutAccoutService.add(user.id, dto);
-    }
-    getBanks() {
-        return this.bankService.list();
-    }
-    getBankByCode(code) {
-        return this.bankService.find(code);
     }
     setDefault(user, id) {
         return this.payoutAccoutService.setDefault(user.id, id);
@@ -47,6 +45,12 @@ let PayoutAccoutController = class PayoutAccoutController {
 };
 exports.PayoutAccoutController = PayoutAccoutController;
 __decorate([
+    (0, common_1.Get)("bank"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], PayoutAccoutController.prototype, "getBanks", null);
+__decorate([
     (0, common_1.Get)(),
     __param(0, (0, current_user_decorator_1.CurrentUser)()),
     __metadata("design:type", Function),
@@ -55,36 +59,27 @@ __decorate([
 ], PayoutAccoutController.prototype, "listMine", null);
 __decorate([
     (0, common_1.Post)(),
+    (0, throttler_1.Throttle)({ default: { limit: 40, ttl: 60 * 60_000 } }),
     __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, add_payout_account_dto_1.AddPayoutAccountDto]),
     __metadata("design:returntype", void 0)
 ], PayoutAccoutController.prototype, "add", null);
 __decorate([
-    (0, common_1.Get)("bank"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
-], PayoutAccoutController.prototype, "getBanks", null);
-__decorate([
-    (0, common_1.Get)("bank/:code"),
-    __param(0, (0, common_1.Param)("code")),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
-], PayoutAccoutController.prototype, "getBankByCode", null);
-__decorate([
     (0, common_1.Patch)(":id/default"),
+    (0, common_1.HttpCode)(200),
     __param(0, (0, current_user_decorator_1.CurrentUser)()),
-    __param(1, (0, common_1.Param)("id", common_1.ParseArrayPipe)),
+    __param(1, (0, common_1.Param)("id", common_1.ParseUUIDPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", void 0)
 ], PayoutAccoutController.prototype, "setDefault", null);
 __decorate([
     (0, common_1.Delete)(":id"),
+    (0, common_1.HttpCode)(204),
     __param(0, (0, current_user_decorator_1.CurrentUser)()),
-    __param(1, (0, common_1.Param)("id", common_1.ParseArrayPipe)),
+    __param(1, (0, common_1.Param)("id", common_1.ParseUUIDPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", void 0)

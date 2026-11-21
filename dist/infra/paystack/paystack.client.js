@@ -8,14 +8,16 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var Paystackclient_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Paystackclient = void 0;
 const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
 const paystack_error_1 = require("./paystack.error");
-let Paystackclient = class Paystackclient {
-    baseUrl = "https/api.paystack.co";
+let Paystackclient = Paystackclient_1 = class Paystackclient {
+    baseUrl = "https://api.paystack.co";
     secretKey;
+    logger = new common_1.Logger(Paystackclient_1.name);
     constructor(config) {
         this.secretKey = config.getOrThrow("PAYSTACK_SECRET_KEY");
     }
@@ -33,6 +35,10 @@ let Paystackclient = class Paystackclient {
             });
         }
         catch (error) {
+            const reason = error instanceof Error
+                ? `${error.name}: ${error.message} (${String(error.cause?.code ?? "no code")})`
+                : "unknown";
+            this.logger.warn(`${init?.method ?? "GET"} ${path.split("?")[0]} failed: ${reason}`);
             throw new paystack_error_1.PaystackUnavailableError("Could not reach Paystack");
         }
         const json = (await response
@@ -85,7 +91,7 @@ let Paystackclient = class Paystackclient {
     }
 };
 exports.Paystackclient = Paystackclient;
-exports.Paystackclient = Paystackclient = __decorate([
+exports.Paystackclient = Paystackclient = Paystackclient_1 = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [config_1.ConfigService])
 ], Paystackclient);

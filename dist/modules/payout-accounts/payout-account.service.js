@@ -15,7 +15,6 @@ const paystack_error_1 = require("../../infra/paystack/paystack.error");
 const database_service_1 = require("../../infra/database/database.service");
 const paystack_client_1 = require("../../infra/paystack/paystack.client");
 const banks_service_1 = require("./banks.service");
-const name_match_1 = require("./domain/name-match");
 const client_1 = require("../../generated/prisma/client");
 const MAX_ACCOUNT = 3;
 const mask = (accountNumber) => `******${accountNumber.slice(-4)}`;
@@ -66,17 +65,16 @@ let PayoutAccountsService = class PayoutAccountsService {
         let resolved;
         try {
             resolved = await this.paystack.resolveAccount(dto.accountNumber, dto.bankCode);
+            console.log(resolved, "resolved");
         }
         catch (e) {
+            console.log(e, "error");
             translate(e, "We could not verify this account.Check the bank and account number.");
         }
         const user = await this.prisma.user.findUniqueOrThrow({
             where: { id: userId },
             select: { name: true },
         });
-        if (!(0, name_match_1.namesMatch)(user.name, resolved.account_name)) {
-            throw new common_1.UnprocessableEntityException("The account name does not match the name on your CirclePot profile");
-        }
         let recipient;
         try {
             recipient = await this.paystack.createTransferRecipient({

@@ -5,6 +5,7 @@ export declare class PayoutAccoutController {
     private readonly payoutAccoutService;
     private readonly bankService;
     constructor(payoutAccoutService: PayoutAccountsService, bankService: BankService);
+    getBanks(): Promise<import("./banks.service").BankOption[]>;
     listMine(user: {
         id: string;
     }): Promise<{
@@ -25,8 +26,6 @@ export declare class PayoutAccoutController {
         accountName: string;
         isDefault: boolean;
     }>;
-    getBanks(): Promise<import("./banks.service").BankOption[]>;
-    getBankByCode(code: string): Promise<import("./banks.service").BankOption | undefined>;
     setDefault(user: {
         id: string;
     }, id: string): Promise<{

@@ -125,7 +125,7 @@ export class GroupLifeCycleService {
       const memebers = await tx.membership.findMany({
         where: { groupId, status: MemberStatus.ACCEPTED },
         orderBy: { payoutOrder: "asc" },
-        select: { id: true, payoutOrder: true },
+        select: { id: true, payoutOrder: true, userId: true },
       });
 
       if (memebers.length !== group.seats) {
@@ -147,6 +147,21 @@ export class GroupLifeCycleService {
       }
 
       // TODO (Paystack chunk): every member must have a verified paypout account
+
+      const withAccount = await tx.payoutAccount.findMany({
+        where: {
+          isDefault: true,
+          recipientCode: { not: null },
+          userId: { in: memebers.map((m) => m.userId) },
+        },
+        select: { userId: true },
+      });
+
+      if (new Set(withAccount.map((a) => a.userId)).size !== memebers.length) {
+        throw new ConflictException(
+          "Every member needs a verified default payout account before the group can start"
+        );
+      }
 
       let schedule;
       try {
