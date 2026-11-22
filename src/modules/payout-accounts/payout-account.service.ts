@@ -41,7 +41,7 @@ const view = (a: {
   isDefault: a.isDefault,
 });
 
-function translate(error: unknown, userMessage: string): never {
+export function translate(error: unknown, userMessage: string): never {
   if (error instanceof PaystackUnavailableError) {
     throw new ServiceUnavailableException(
       "Our payment provider is unavailable."

@@ -11,6 +11,21 @@ export interface ResolvedAccount {
 export interface TransferRecipient {
     recipient_code: string;
 }
+export interface VerifiedTransaction {
+    id: number;
+    status: string;
+    reference: string;
+    amount: number;
+    currency: string;
+    paid_at: string | null;
+    channel: string | null;
+    authorization: Record<string, unknown> | null;
+}
+export interface InitializedTransaction {
+    authorization_url: string;
+    access_code: string;
+    reference: string;
+}
 export declare class Paystackclient {
     private readonly baseUrl;
     private readonly secretKey;
@@ -24,4 +39,12 @@ export declare class Paystackclient {
         accountNumber: string;
         bankCode: string;
     }): Promise<TransferRecipient>;
+    verifyTransaction(reference: string): Promise<VerifiedTransaction>;
+    initializeTransaction(input: {
+        email: string;
+        amountKobo: number;
+        reference: string;
+        callbackUrl: string;
+        metadata?: Record<string, unknown>;
+    }): Promise<InitializedTransaction>;
 }

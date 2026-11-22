@@ -13,6 +13,8 @@ import { RedisModule } from "./infra/redis/redis.module";
 import { GroupModule } from "./modules/groups/group.module";
 import { PaystackModule } from "./infra/paystack/paystack.module";
 import { PayoutAccountModule } from "./modules/payout-accounts/payout.module";
+import { PaymentsModule } from "./modules/payments/payments.module";
+import { WebhooksModule } from "./modules/webhooks/webhooks.module";
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
@@ -35,6 +37,8 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
     PaystackModule,
     PayoutAccountModule,
     GroupModule,
+    PaymentsModule,
+    WebhooksModule,
   ],
   controllers: [AppController],
   providers: [AppService],

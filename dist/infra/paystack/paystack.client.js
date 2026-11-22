@@ -89,6 +89,36 @@ let Paystackclient = Paystackclient_1 = class Paystackclient {
         });
         return res.data;
     }
+    async verifyTransaction(reference) {
+        if (typeof reference !== "string" || reference.trim() === "") {
+            throw new paystack_error_1.PaystackApiError(401, "A transaction reference is required");
+        }
+        const res = await this.request(`/transaction/verify/${encodeURIComponent(reference.trim())}`);
+        return {
+            id: res.data.id,
+            status: res.data.status,
+            reference: res.data.reference,
+            amount: res.data.amount,
+            currency: res.data.currency,
+            paid_at: res.data.paid_at,
+            channel: res.data.channel,
+            authorization: res.data.authorization,
+        };
+    }
+    async initializeTransaction(input) {
+        const res = await this.request("/transaction/initialize", {
+            method: "POST",
+            body: {
+                email: input.email,
+                amount: input.amountKobo,
+                reference: input.reference,
+                callback_url: input.callbackUrl,
+                currency: "NGN",
+                metadata: input.metadata,
+            },
+        });
+        return res.data;
+    }
 };
 exports.Paystackclient = Paystackclient;
 exports.Paystackclient = Paystackclient = Paystackclient_1 = __decorate([

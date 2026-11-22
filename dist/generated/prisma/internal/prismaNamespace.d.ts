@@ -1529,6 +1529,7 @@ export declare const PaymentScalarFieldEnum: {
     readonly status: "status";
     readonly savingsDepositId: "savingsDepositId";
     readonly providerTransactionId: "providerTransactionId";
+    readonly authorizationUrl: "authorizationUrl";
     readonly paidAt: "paidAt";
     readonly createdAt: "createdAt";
     readonly updatedAt: "updatedAt";

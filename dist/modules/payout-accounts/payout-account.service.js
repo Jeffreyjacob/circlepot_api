@@ -10,6 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PayoutAccountsService = void 0;
+exports.translate = translate;
 const common_1 = require("@nestjs/common");
 const paystack_error_1 = require("../../infra/paystack/paystack.error");
 const database_service_1 = require("../../infra/database/database.service");
@@ -65,10 +66,8 @@ let PayoutAccountsService = class PayoutAccountsService {
         let resolved;
         try {
             resolved = await this.paystack.resolveAccount(dto.accountNumber, dto.bankCode);
-            console.log(resolved, "resolved");
         }
         catch (e) {
-            console.log(e, "error");
             translate(e, "We could not verify this account.Check the bank and account number.");
         }
         const user = await this.prisma.user.findUniqueOrThrow({

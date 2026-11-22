@@ -22,6 +22,23 @@ export interface TransferRecipient {
   recipient_code: string;
 }
 
+export interface VerifiedTransaction {
+  id: number;
+  status: string;
+  reference: string;
+  amount: number;
+  currency: string;
+  paid_at: string | null;
+  channel: string | null;
+  authorization: Record<string, unknown> | null;
+}
+
+export interface InitializedTransaction {
+  authorization_url: string;
+  access_code: string;
+  reference: string;
+}
+
 @Injectable()
 export class Paystackclient {
   private readonly baseUrl = "https://api.paystack.co";
@@ -119,6 +136,52 @@ export class Paystackclient {
         currency: "NGN",
       },
     });
+
+    return res.data;
+  }
+
+  async verifyTransaction(reference: string): Promise<VerifiedTransaction> {
+    if (typeof reference !== "string" || reference.trim() === "") {
+      throw new PaystackApiError(401, "A transaction reference is required");
+    }
+
+    const res = await this.request<VerifiedTransaction>(
+      `/transaction/verify/${encodeURIComponent(reference.trim())}`
+    );
+
+    return {
+      id: res.data.id,
+      status: res.data.status,
+      reference: res.data.reference,
+      amount: res.data.amount,
+      currency: res.data.currency,
+      paid_at: res.data.paid_at,
+      channel: res.data.channel,
+      authorization: res.data.authorization,
+    };
+  }
+
+  async initializeTransaction(input: {
+    email: string;
+    amountKobo: number;
+    reference: string;
+    callbackUrl: string;
+    metadata?: Record<string, unknown>;
+  }): Promise<InitializedTransaction> {
+    const res = await this.request<InitializedTransaction>(
+      "/transaction/initialize",
+      {
+        method: "POST",
+        body: {
+          email: input.email,
+          amount: input.amountKobo,
+          reference: input.reference,
+          callback_url: input.callbackUrl,
+          currency: "NGN",
+          metadata: input.metadata,
+        },
+      }
+    );
 
     return res.data;
   }

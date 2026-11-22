@@ -23,6 +23,8 @@ const redis_module_1 = require("./infra/redis/redis.module");
 const group_module_1 = require("./modules/groups/group.module");
 const paystack_module_1 = require("./infra/paystack/paystack.module");
 const payout_module_1 = require("./modules/payout-accounts/payout.module");
+const payments_module_1 = require("./modules/payments/payments.module");
+const webhooks_module_1 = require("./modules/webhooks/webhooks.module");
 _a = (0, observe_1.createObserveModule)(), exports.ObserveModule = _a.ObserveModule, exports.ObserveInstrument = _a.ObserveInstrument;
 let AppModule = class AppModule {
 };
@@ -45,6 +47,8 @@ exports.AppModule = AppModule = __decorate([
             paystack_module_1.PaystackModule,
             payout_module_1.PayoutAccountModule,
             group_module_1.GroupModule,
+            payments_module_1.PaymentsModule,
+            webhooks_module_1.WebhooksModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

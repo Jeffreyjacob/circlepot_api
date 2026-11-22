@@ -180,6 +180,7 @@ exports.PaymentScalarFieldEnum = {
     status: 'status',
     savingsDepositId: 'savingsDepositId',
     providerTransactionId: 'providerTransactionId',
+    authorizationUrl: 'authorizationUrl',
     paidAt: 'paidAt',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'

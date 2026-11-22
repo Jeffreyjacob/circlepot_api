@@ -23,6 +23,7 @@ export type PaymentMinAggregateOutputType = {
     status: $Enums.PaymentStatus | null;
     savingsDepositId: string | null;
     providerTransactionId: string | null;
+    authorizationUrl: string | null;
     paidAt: Date | null;
     createdAt: Date | null;
     updatedAt: Date | null;
@@ -35,6 +36,7 @@ export type PaymentMaxAggregateOutputType = {
     status: $Enums.PaymentStatus | null;
     savingsDepositId: string | null;
     providerTransactionId: string | null;
+    authorizationUrl: string | null;
     paidAt: Date | null;
     createdAt: Date | null;
     updatedAt: Date | null;
@@ -47,6 +49,7 @@ export type PaymentCountAggregateOutputType = {
     status: number;
     savingsDepositId: number;
     providerTransactionId: number;
+    authorizationUrl: number;
     paidAt: number;
     createdAt: number;
     updatedAt: number;
@@ -66,6 +69,7 @@ export type PaymentMinAggregateInputType = {
     status?: true;
     savingsDepositId?: true;
     providerTransactionId?: true;
+    authorizationUrl?: true;
     paidAt?: true;
     createdAt?: true;
     updatedAt?: true;
@@ -78,6 +82,7 @@ export type PaymentMaxAggregateInputType = {
     status?: true;
     savingsDepositId?: true;
     providerTransactionId?: true;
+    authorizationUrl?: true;
     paidAt?: true;
     createdAt?: true;
     updatedAt?: true;
@@ -90,6 +95,7 @@ export type PaymentCountAggregateInputType = {
     status?: true;
     savingsDepositId?: true;
     providerTransactionId?: true;
+    authorizationUrl?: true;
     paidAt?: true;
     createdAt?: true;
     updatedAt?: true;
@@ -131,6 +137,7 @@ export type PaymentGroupByOutputType = {
     status: $Enums.PaymentStatus;
     savingsDepositId: string | null;
     providerTransactionId: string | null;
+    authorizationUrl: string | null;
     paidAt: Date | null;
     createdAt: Date;
     updatedAt: Date;
@@ -154,6 +161,7 @@ export type PaymentWhereInput = {
     status?: Prisma.EnumPaymentStatusFilter<"Payment"> | $Enums.PaymentStatus;
     savingsDepositId?: Prisma.StringNullableFilter<"Payment"> | string | null;
     providerTransactionId?: Prisma.StringNullableFilter<"Payment"> | string | null;
+    authorizationUrl?: Prisma.StringNullableFilter<"Payment"> | string | null;
     paidAt?: Prisma.DateTimeNullableFilter<"Payment"> | Date | string | null;
     createdAt?: Prisma.DateTimeFilter<"Payment"> | Date | string;
     updatedAt?: Prisma.DateTimeFilter<"Payment"> | Date | string;
@@ -168,6 +176,7 @@ export type PaymentOrderByWithRelationInput = {
     status?: Prisma.SortOrder;
     savingsDepositId?: Prisma.SortOrderInput | Prisma.SortOrder;
     providerTransactionId?: Prisma.SortOrderInput | Prisma.SortOrder;
+    authorizationUrl?: Prisma.SortOrderInput | Prisma.SortOrder;
     paidAt?: Prisma.SortOrderInput | Prisma.SortOrder;
     createdAt?: Prisma.SortOrder;
     updatedAt?: Prisma.SortOrder;
@@ -185,6 +194,7 @@ export type PaymentWhereUniqueInput = Prisma.AtLeast<{
     amountKobo?: Prisma.IntFilter<"Payment"> | number;
     status?: Prisma.EnumPaymentStatusFilter<"Payment"> | $Enums.PaymentStatus;
     savingsDepositId?: Prisma.StringNullableFilter<"Payment"> | string | null;
+    authorizationUrl?: Prisma.StringNullableFilter<"Payment"> | string | null;
     paidAt?: Prisma.DateTimeNullableFilter<"Payment"> | Date | string | null;
     createdAt?: Prisma.DateTimeFilter<"Payment"> | Date | string;
     updatedAt?: Prisma.DateTimeFilter<"Payment"> | Date | string;
@@ -199,6 +209,7 @@ export type PaymentOrderByWithAggregationInput = {
     status?: Prisma.SortOrder;
     savingsDepositId?: Prisma.SortOrderInput | Prisma.SortOrder;
     providerTransactionId?: Prisma.SortOrderInput | Prisma.SortOrder;
+    authorizationUrl?: Prisma.SortOrderInput | Prisma.SortOrder;
     paidAt?: Prisma.SortOrderInput | Prisma.SortOrder;
     createdAt?: Prisma.SortOrder;
     updatedAt?: Prisma.SortOrder;
@@ -219,6 +230,7 @@ export type PaymentScalarWhereWithAggregatesInput = {
     status?: Prisma.EnumPaymentStatusWithAggregatesFilter<"Payment"> | $Enums.PaymentStatus;
     savingsDepositId?: Prisma.StringNullableWithAggregatesFilter<"Payment"> | string | null;
     providerTransactionId?: Prisma.StringNullableWithAggregatesFilter<"Payment"> | string | null;
+    authorizationUrl?: Prisma.StringNullableWithAggregatesFilter<"Payment"> | string | null;
     paidAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Payment"> | Date | string | null;
     createdAt?: Prisma.DateTimeWithAggregatesFilter<"Payment"> | Date | string;
     updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Payment"> | Date | string;
@@ -229,6 +241,7 @@ export type PaymentCreateInput = {
     amountKobo: number;
     status?: $Enums.PaymentStatus;
     providerTransactionId?: string | null;
+    authorizationUrl?: string | null;
     paidAt?: Date | string | null;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -243,6 +256,7 @@ export type PaymentUncheckedCreateInput = {
     status?: $Enums.PaymentStatus;
     savingsDepositId?: string | null;
     providerTransactionId?: string | null;
+    authorizationUrl?: string | null;
     paidAt?: Date | string | null;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -253,6 +267,7 @@ export type PaymentUpdateInput = {
     amountKobo?: Prisma.IntFieldUpdateOperationsInput | number;
     status?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus;
     providerTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    authorizationUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -267,6 +282,7 @@ export type PaymentUncheckedUpdateInput = {
     status?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus;
     savingsDepositId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     providerTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    authorizationUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -279,6 +295,7 @@ export type PaymentCreateManyInput = {
     status?: $Enums.PaymentStatus;
     savingsDepositId?: string | null;
     providerTransactionId?: string | null;
+    authorizationUrl?: string | null;
     paidAt?: Date | string | null;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -289,6 +306,7 @@ export type PaymentUpdateManyMutationInput = {
     amountKobo?: Prisma.IntFieldUpdateOperationsInput | number;
     status?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus;
     providerTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    authorizationUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -301,6 +319,7 @@ export type PaymentUncheckedUpdateManyInput = {
     status?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus;
     savingsDepositId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     providerTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    authorizationUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -321,6 +340,7 @@ export type PaymentCountOrderByAggregateInput = {
     status?: Prisma.SortOrder;
     savingsDepositId?: Prisma.SortOrder;
     providerTransactionId?: Prisma.SortOrder;
+    authorizationUrl?: Prisma.SortOrder;
     paidAt?: Prisma.SortOrder;
     createdAt?: Prisma.SortOrder;
     updatedAt?: Prisma.SortOrder;
@@ -336,6 +356,7 @@ export type PaymentMaxOrderByAggregateInput = {
     status?: Prisma.SortOrder;
     savingsDepositId?: Prisma.SortOrder;
     providerTransactionId?: Prisma.SortOrder;
+    authorizationUrl?: Prisma.SortOrder;
     paidAt?: Prisma.SortOrder;
     createdAt?: Prisma.SortOrder;
     updatedAt?: Prisma.SortOrder;
@@ -348,6 +369,7 @@ export type PaymentMinOrderByAggregateInput = {
     status?: Prisma.SortOrder;
     savingsDepositId?: Prisma.SortOrder;
     providerTransactionId?: Prisma.SortOrder;
+    authorizationUrl?: Prisma.SortOrder;
     paidAt?: Prisma.SortOrder;
     createdAt?: Prisma.SortOrder;
     updatedAt?: Prisma.SortOrder;
@@ -440,6 +462,7 @@ export type PaymentCreateWithoutInstallmentInput = {
     amountKobo: number;
     status?: $Enums.PaymentStatus;
     providerTransactionId?: string | null;
+    authorizationUrl?: string | null;
     paidAt?: Date | string | null;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -452,6 +475,7 @@ export type PaymentUncheckedCreateWithoutInstallmentInput = {
     status?: $Enums.PaymentStatus;
     savingsDepositId?: string | null;
     providerTransactionId?: string | null;
+    authorizationUrl?: string | null;
     paidAt?: Date | string | null;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -488,6 +512,7 @@ export type PaymentScalarWhereInput = {
     status?: Prisma.EnumPaymentStatusFilter<"Payment"> | $Enums.PaymentStatus;
     savingsDepositId?: Prisma.StringNullableFilter<"Payment"> | string | null;
     providerTransactionId?: Prisma.StringNullableFilter<"Payment"> | string | null;
+    authorizationUrl?: Prisma.StringNullableFilter<"Payment"> | string | null;
     paidAt?: Prisma.DateTimeNullableFilter<"Payment"> | Date | string | null;
     createdAt?: Prisma.DateTimeFilter<"Payment"> | Date | string;
     updatedAt?: Prisma.DateTimeFilter<"Payment"> | Date | string;
@@ -498,6 +523,7 @@ export type PaymentCreateWithoutSavingsDepositInput = {
     amountKobo: number;
     status?: $Enums.PaymentStatus;
     providerTransactionId?: string | null;
+    authorizationUrl?: string | null;
     paidAt?: Date | string | null;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -510,6 +536,7 @@ export type PaymentUncheckedCreateWithoutSavingsDepositInput = {
     amountKobo: number;
     status?: $Enums.PaymentStatus;
     providerTransactionId?: string | null;
+    authorizationUrl?: string | null;
     paidAt?: Date | string | null;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -542,6 +569,7 @@ export type PaymentCreateManyInstallmentInput = {
     status?: $Enums.PaymentStatus;
     savingsDepositId?: string | null;
     providerTransactionId?: string | null;
+    authorizationUrl?: string | null;
     paidAt?: Date | string | null;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -552,6 +580,7 @@ export type PaymentUpdateWithoutInstallmentInput = {
     amountKobo?: Prisma.IntFieldUpdateOperationsInput | number;
     status?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus;
     providerTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    authorizationUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -564,6 +593,7 @@ export type PaymentUncheckedUpdateWithoutInstallmentInput = {
     status?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus;
     savingsDepositId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     providerTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    authorizationUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -575,6 +605,7 @@ export type PaymentUncheckedUpdateManyWithoutInstallmentInput = {
     status?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus;
     savingsDepositId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     providerTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    authorizationUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -586,6 +617,7 @@ export type PaymentCreateManySavingsDepositInput = {
     amountKobo: number;
     status?: $Enums.PaymentStatus;
     providerTransactionId?: string | null;
+    authorizationUrl?: string | null;
     paidAt?: Date | string | null;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -596,6 +628,7 @@ export type PaymentUpdateWithoutSavingsDepositInput = {
     amountKobo?: Prisma.IntFieldUpdateOperationsInput | number;
     status?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus;
     providerTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    authorizationUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -608,6 +641,7 @@ export type PaymentUncheckedUpdateWithoutSavingsDepositInput = {
     amountKobo?: Prisma.IntFieldUpdateOperationsInput | number;
     status?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus;
     providerTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    authorizationUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -619,6 +653,7 @@ export type PaymentUncheckedUpdateManyWithoutSavingsDepositInput = {
     amountKobo?: Prisma.IntFieldUpdateOperationsInput | number;
     status?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus;
     providerTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    authorizationUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -631,6 +666,7 @@ export type PaymentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     status?: boolean;
     savingsDepositId?: boolean;
     providerTransactionId?: boolean;
+    authorizationUrl?: boolean;
     paidAt?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
@@ -645,6 +681,7 @@ export type PaymentSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
     status?: boolean;
     savingsDepositId?: boolean;
     providerTransactionId?: boolean;
+    authorizationUrl?: boolean;
     paidAt?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
@@ -659,6 +696,7 @@ export type PaymentSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
     status?: boolean;
     savingsDepositId?: boolean;
     providerTransactionId?: boolean;
+    authorizationUrl?: boolean;
     paidAt?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
@@ -673,11 +711,12 @@ export type PaymentSelectScalar = {
     status?: boolean;
     savingsDepositId?: boolean;
     providerTransactionId?: boolean;
+    authorizationUrl?: boolean;
     paidAt?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
 };
-export type PaymentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "installmentId" | "reference" | "amountKobo" | "status" | "savingsDepositId" | "providerTransactionId" | "paidAt" | "createdAt" | "updatedAt", ExtArgs["result"]["payment"]>;
+export type PaymentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "installmentId" | "reference" | "amountKobo" | "status" | "savingsDepositId" | "providerTransactionId" | "authorizationUrl" | "paidAt" | "createdAt" | "updatedAt", ExtArgs["result"]["payment"]>;
 export type PaymentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     installment?: boolean | Prisma.Payment$installmentArgs<ExtArgs>;
     savingsDeposit?: boolean | Prisma.Payment$savingsDepositArgs<ExtArgs>;
@@ -704,6 +743,7 @@ export type $PaymentPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
         status: $Enums.PaymentStatus;
         savingsDepositId: string | null;
         providerTransactionId: string | null;
+        authorizationUrl: string | null;
         paidAt: Date | null;
         createdAt: Date;
         updatedAt: Date;
@@ -773,6 +813,7 @@ export interface PaymentFieldRefs {
     readonly status: Prisma.FieldRef<"Payment", 'PaymentStatus'>;
     readonly savingsDepositId: Prisma.FieldRef<"Payment", 'String'>;
     readonly providerTransactionId: Prisma.FieldRef<"Payment", 'String'>;
+    readonly authorizationUrl: Prisma.FieldRef<"Payment", 'String'>;
     readonly paidAt: Prisma.FieldRef<"Payment", 'DateTime'>;
     readonly createdAt: Prisma.FieldRef<"Payment", 'DateTime'>;
     readonly updatedAt: Prisma.FieldRef<"Payment", 'DateTime'>;

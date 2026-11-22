@@ -2,6 +2,7 @@ import { PrismaService } from "../../infra/database/database.service";
 import { Paystackclient } from "../../infra/paystack/paystack.client";
 import { BankService } from "./banks.service";
 import { AddPayoutAccountDto } from "./dto/add-payout-account.dto";
+export declare function translate(error: unknown, userMessage: string): never;
 export declare class PayoutAccountsService {
     private readonly prisma;
     private readonly paystack;
