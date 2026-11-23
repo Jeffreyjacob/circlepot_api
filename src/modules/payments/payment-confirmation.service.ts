@@ -115,6 +115,7 @@ export class PaymentConfirmationService {
           data: {
             status: PaymentStatus.SUCCESS,
             providerTransactionId: String(verified.id),
+            paidAt: now,
           },
         });
 
@@ -138,7 +139,7 @@ export class PaymentConfirmationService {
         if (lateFreePaid > 0) {
           await tx.ledgerEntry.create({
             data: {
-              idempotencyKey: `paymernt: ${payment.id}:late-fee`,
+              idempotencyKey: `payment: ${payment.id}:late-fee`,
               groupId: installment.cycle.groupId,
               userId: installment.membership.userId,
               type: LedgerType.LATE_FEE,

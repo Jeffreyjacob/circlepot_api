@@ -57,7 +57,7 @@ export class PaymentService {
         email: reserved.email,
         amountKobo: reserved.amountKobo,
         reference: reserved.reference,
-        callbackUrl: `${this.config.getOrThrow<string>("FRONTENDURL")}/payments/callback`,
+        callbackUrl: `${this.config.getOrThrow<string>("FRONTEND_URL")}/payments/callback`,
         metadata: {
           paymentId: reserved.paymentId,
           installmentId: reserved.installmentId,
@@ -126,7 +126,10 @@ export class PaymentService {
         throw new ConflictException("This cycle has not started yet");
       }
 
-      const amountKobo = (installment.amountKobo = installment.lateFeeKobo);
+      const amountKobo = installment.amountKobo - installment.lateFeeKobo;
+      if (amountKobo <= 0) {
+        throw new ConflictException("Nothing to pay on this installment");
+      }
       const recent = await tx.payment.findFirst({
         where: {
           installmentId,

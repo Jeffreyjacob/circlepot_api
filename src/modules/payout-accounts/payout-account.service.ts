@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
+  Logger,
   NotFoundException,
   ServiceUnavailableException,
   UnprocessableEntityException,
@@ -41,6 +42,8 @@ const view = (a: {
   isDefault: a.isDefault,
 });
 
+const logger = new Logger("Paystack");
+
 export function translate(error: unknown, userMessage: string): never {
   if (error instanceof PaystackUnavailableError) {
     throw new ServiceUnavailableException(
@@ -54,6 +57,10 @@ export function translate(error: unknown, userMessage: string): never {
   ) {
     throw new UnprocessableEntityException(userMessage);
   }
+  logger.error(
+    `Unexpected error: ${error instanceof Error ? `${error.name}: ${error.message}` : String(error)}`
+  );
+
   throw new ServiceUnavailableException(
     "Our payment provider had a problem. Try again shortly."
   );

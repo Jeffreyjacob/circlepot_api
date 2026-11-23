@@ -27,6 +27,7 @@ const view = (a) => ({
     accountName: a.accountName,
     isDefault: a.isDefault,
 });
+const logger = new common_1.Logger("Paystack");
 function translate(error, userMessage) {
     if (error instanceof paystack_error_1.PaystackUnavailableError) {
         throw new common_1.ServiceUnavailableException("Our payment provider is unavailable.");
@@ -36,6 +37,7 @@ function translate(error, userMessage) {
         error.httpStatus < 500) {
         throw new common_1.UnprocessableEntityException(userMessage);
     }
+    logger.error(`Unexpected error: ${error instanceof Error ? `${error.name}: ${error.message}` : String(error)}`);
     throw new common_1.ServiceUnavailableException("Our payment provider had a problem. Try again shortly.");
 }
 let PayoutAccountsService = class PayoutAccountsService {
