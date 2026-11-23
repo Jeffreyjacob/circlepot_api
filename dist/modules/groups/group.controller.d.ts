@@ -94,6 +94,53 @@ export declare class GroupController {
         acceptedAt: Date | null;
         declinedAt: Date | null;
     }[]>;
+    board(user: {
+        id: string;
+    }, id: string): Promise<{
+        potKobo: number;
+        seats: number;
+        cycles: {
+            number: number;
+            startsAt: Date;
+            endsAt: Date;
+            status: import("../../generated/prisma/enums").CycleStatus;
+            recipient: {
+                membershipId: string;
+                name: string;
+            } | null;
+            targetKobo: number;
+            collectedKobo: number;
+            remainingKobo: number;
+            members: {
+                membershipId: string;
+                name: string;
+                installmentsPaid: number;
+                installmentsTotal: number;
+                paidKobo: number;
+                owedKobo: number;
+                state: string;
+            }[];
+        }[];
+    }>;
+    myInstallments(user: {
+        id: string;
+    }, id: string): Promise<{
+        id: string;
+        cycleNumber: number;
+        sequence: number;
+        dueAt: Date;
+        status: import("../../generated/prisma/enums").InstallmentStatus;
+        paidAt: Date | null;
+        amountKobo: number;
+        lateFeeKobo: number;
+        amountDueKobo: number;
+        payable: boolean;
+        latestPayment: {
+            createdAt: Date;
+            status: import("../../generated/prisma/enums").PaymentStatus;
+            reference: string;
+        };
+    }[]>;
     setOrder(user: {
         id: string;
     }, id: string, dto: SetOrderDto): Promise<{

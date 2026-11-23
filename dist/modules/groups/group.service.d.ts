@@ -1,4 +1,4 @@
-import { GroupStatus, Prisma } from "../../generated/prisma/client";
+import { GroupStatus, InstallmentStatus, Prisma } from "../../generated/prisma/client";
 import { PrismaService } from "../../infra/database/database.service";
 import { CreateGroupDto } from "./dto/create-group.dto";
 export declare class GroupService {
@@ -63,6 +63,49 @@ export declare class GroupService {
                 id: string;
                 name: string;
             };
+        }[];
+    }>;
+    getMyInstallments(userId: string, groupId: string): Promise<{
+        id: string;
+        cycleNumber: number;
+        sequence: number;
+        dueAt: Date;
+        status: InstallmentStatus;
+        paidAt: Date | null;
+        amountKobo: number;
+        lateFeeKobo: number;
+        amountDueKobo: number;
+        payable: boolean;
+        latestPayment: {
+            createdAt: Date;
+            status: import("../../generated/prisma/enums").PaymentStatus;
+            reference: string;
+        };
+    }[]>;
+    getBoard(userId: string, groupId: string): Promise<{
+        potKobo: number;
+        seats: number;
+        cycles: {
+            number: number;
+            startsAt: Date;
+            endsAt: Date;
+            status: import("../../generated/prisma/enums").CycleStatus;
+            recipient: {
+                membershipId: string;
+                name: string;
+            } | null;
+            targetKobo: number;
+            collectedKobo: number;
+            remainingKobo: number;
+            members: {
+                membershipId: string;
+                name: string;
+                installmentsPaid: number;
+                installmentsTotal: number;
+                paidKobo: number;
+                owedKobo: number;
+                state: string;
+            }[];
         }[];
     }>;
 }

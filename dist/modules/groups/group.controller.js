@@ -48,6 +48,12 @@ let GroupController = class GroupController {
     listForHost(user, id) {
         return this.inviteService.listForHost(user.id, id);
     }
+    board(user, id) {
+        return this.groupService.getBoard(user.id, id);
+    }
+    myInstallments(user, id) {
+        return this.groupService.getMyInstallments(user.id, id);
+    }
     setOrder(user, id, dto) {
         return this.lifeCycleService.setOrder(user.id, id, dto.membershipIds);
     }
@@ -101,6 +107,22 @@ __decorate([
     __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", void 0)
 ], GroupController.prototype, "listForHost", null);
+__decorate([
+    (0, common_1.Get)(":id/board"),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, common_1.Param)("id", common_1.ParseUUIDPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", void 0)
+], GroupController.prototype, "board", null);
+__decorate([
+    (0, common_1.Get)(":id/my-installments"),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, common_1.Param)("id", common_1.ParseUUIDPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", void 0)
+], GroupController.prototype, "myInstallments", null);
 __decorate([
     (0, common_1.Put)(":id/order"),
     (0, common_1.HttpCode)(200),

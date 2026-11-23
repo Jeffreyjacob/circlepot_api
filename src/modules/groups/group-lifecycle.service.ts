@@ -56,6 +56,8 @@ export class GroupLifeCycleService {
         select: { id: true, payoutOrder: true },
       });
 
+      console.log(members, "members");
+
       const known = new Set(members.map((m) => m.id));
       if (
         membershipIds.length !== members.length ||
@@ -139,10 +141,11 @@ export class GroupLifeCycleService {
           "Set the payout order for every member first"
         );
       }
-
-      if (group.startDate < startOfTodayUTC()) {
+      const today = startOfTodayUTC();
+      console.log(startOfTodayUTC(), group.startDate);
+      if (group.startDate < today) {
         throw new ConflictException(
-          "The start date has passed. Cancel this group and create a new one"
+          `The start date (${group.startDate.toISOString()}) is before today (${today.toISOString()}). Cancel this group and create a new one`
         );
       }
 

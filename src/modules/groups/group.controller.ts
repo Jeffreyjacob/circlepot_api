@@ -68,6 +68,22 @@ export class GroupController {
     return this.inviteService.listForHost(user.id, id);
   }
 
+  @Get(":id/board")
+  board(
+    @CurrentUser() user: { id: string },
+    @Param("id", ParseUUIDPipe) id: string
+  ) {
+    return this.groupService.getBoard(user.id, id);
+  }
+
+  @Get(":id/my-installments")
+  myInstallments(
+    @CurrentUser() user: { id: string },
+    @Param("id", ParseUUIDPipe) id: string
+  ) {
+    return this.groupService.getMyInstallments(user.id, id);
+  }
+
   @Put(":id/order")
   @HttpCode(200)
   setOrder(

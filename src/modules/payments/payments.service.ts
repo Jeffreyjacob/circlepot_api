@@ -195,4 +195,30 @@ export class PaymentService {
       translate(error, "We could not check this payment");
     }
   }
+
+  listMine(userId: string) {
+    return this.prisma.payment.findMany({
+      where: { installment: { membership: { userId } } },
+      orderBy: { createdAt: "desc" },
+      take: 50,
+      select: {
+        reference: true,
+        status: true,
+        amountKobo: true,
+        paidAt: true,
+        createdAt: true,
+        installment: {
+          select: {
+            sequence: true,
+            cycle: {
+              select: {
+                number: true,
+                group: { select: { id: true, name: true } },
+              },
+            },
+          },
+        },
+      },
+    });
+  }
 }

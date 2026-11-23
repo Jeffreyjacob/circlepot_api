@@ -42,6 +42,7 @@ let GroupLifeCycleService = class GroupLifeCycleService {
                 where: { groupId, status: client_1.MemberStatus.ACCEPTED },
                 select: { id: true, payoutOrder: true },
             });
+            console.log(members, "members");
             const known = new Set(members.map((m) => m.id));
             if (membershipIds.length !== members.length ||
                 !membershipIds.every((id) => known.has(id))) {
@@ -104,8 +105,10 @@ let GroupLifeCycleService = class GroupLifeCycleService {
             if (memebers.some((m, i) => m.payoutOrder !== i + 1)) {
                 throw new common_1.ConflictException("Set the payout order for every member first");
             }
-            if (group.startDate < startOfTodayUTC()) {
-                throw new common_1.ConflictException("The start date has passed. Cancel this group and create a new one");
+            const today = startOfTodayUTC();
+            console.log(startOfTodayUTC(), group.startDate);
+            if (group.startDate < today) {
+                throw new common_1.ConflictException(`The start date (${group.startDate.toISOString()}) is before today (${today.toISOString()}). Cancel this group and create a new one`);
             }
             const withAccount = await tx.payoutAccount.findMany({
                 where: {

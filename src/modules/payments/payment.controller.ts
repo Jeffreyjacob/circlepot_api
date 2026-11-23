@@ -17,6 +17,11 @@ import { Throttle } from "@nestjs/throttler";
 export class PaymentsController {
   constructor(private readonly payments: PaymentService) {}
 
+  @Get()
+  listMine(@CurrentUser() user: { id: string }) {
+    return this.payments.listMine(user.id);
+  }
+
   @Get(":reference")
   status(
     @CurrentUser() user: { id: string },
