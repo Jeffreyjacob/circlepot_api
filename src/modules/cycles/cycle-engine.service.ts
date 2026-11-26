@@ -15,6 +15,7 @@ import { Prisma } from "../../generated/prisma/client";
 import { InjectQueue } from "@nestjs/bullmq";
 import { WEBHOOK_QUEUE } from "../webhooks/webhooks.constants";
 import { Queue } from "bullmq";
+import { PayoutsService } from "../payouts/payout.service";
 
 const HOUR_MS = 60 * 60 * 1000;
 const MINUTES_MS = 60 * 1000;
@@ -25,15 +26,30 @@ export class CycleEngineService {
 
   constructor(
     private readonly prisma: PrismaService,
-    @InjectQueue(WEBHOOK_QUEUE) private readonly webhookQueue: Queue
+    @InjectQueue(WEBHOOK_QUEUE) private readonly webhookQueue: Queue,
+    private readonly payouts: PayoutsService
   ) {}
 
   async tick(now: Date = new Date()) {
-    const started = await this.startDueCycles(now);
-    const overdue = await this.markOverdue(now);
-    if (started > 0 || overdue > 0) {
+    const started = await this.safely("startDueCycle", () =>
+      this.startDueCycles(now)
+    );
+    const overdue = await this.safely("markOverdue", () =>
+      this.markOverdue(now)
+    );
+    const funded = await this.safely("fundCycles", () => this.fundCycles(now));
+    const retried = await this.safely("retryFailedPayouts", () =>
+      this.payouts.retryFailed(now)
+    );
+    const dispatched = await this.safely("dispatchPayouts", () =>
+      this.payouts.dispatchDue(now)
+    );
+    const requeued = await this.safely("requestStuckWebhook", () =>
+      this.requestStuckWebhooks(now)
+    );
+    if (started + overdue + funded + retried + dispatched + requeued > 0) {
       this.logger.log(
-        `tick: ${started} cycle(s) started, ${overdue} installment(s) overdue`
+        `tick: ${started} started, ${overdue} overdue, ${funded} funded, ${retried} retried, ${dispatched} dispatched, ${requeued} webhook(s) re-queued`
       );
     }
   }
@@ -100,11 +116,17 @@ export class CycleEngineService {
         group: { status: GroupStatus.ACTIVE },
       },
       orderBy: [{ groupId: "asc" }, { number: "asc" }],
-      select: { id: true },
+      select: { id: true, endsAt: true },
     });
 
     let funded = 0;
-    for (const { id } of cycles) {
+    for (const { id, endsAt } of cycles) {
+      if (endsAt > now) {
+        const unpaid = await this.prisma.installment.count({
+          where: { cycleId: id, status: { not: InstallmentStatus.PAID } },
+        });
+        if (unpaid > 0) continue;
+      }
       try {
         if ((await this.processCycle(id, now)) === "funded") funded++;
       } catch (error: any) {
@@ -342,7 +364,7 @@ export class CycleEngineService {
           webhookEventId: event.id,
         },
         {
-          jobId: `${event.id}:sweep:${bucket}`,
+          jobId: `${event.id}-sweep-${bucket}`,
           attempts: 8,
           backoff: { type: "exponential", delay: 10_000 },
           removeOnComplete: true,

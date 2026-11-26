@@ -16,6 +16,7 @@ import { PayoutAccountModule } from "./modules/payout-accounts/payout.module";
 import { PaymentsModule } from "./modules/payments/payments.module";
 import { WebhooksModule } from "./modules/webhooks/webhooks.module";
 import { CyclesModule } from "./modules/cycles/cycles.module";
+import { PayoutsModule } from "./modules/payouts/payouts.module";
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
@@ -41,6 +42,7 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
     PaymentsModule,
     WebhooksModule,
     CyclesModule,
+    PayoutsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

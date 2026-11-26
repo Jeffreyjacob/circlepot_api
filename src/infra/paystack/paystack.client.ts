@@ -39,6 +39,14 @@ export interface InitializedTransaction {
   reference: string;
 }
 
+export interface PaystackTransfer {
+  id: number;
+  status: string;
+  reference: string;
+  tranfer_code: string;
+  amount: number;
+}
+
 @Injectable()
 export class Paystackclient {
   private readonly baseUrl = "https://api.paystack.co";
@@ -184,5 +192,38 @@ export class Paystackclient {
     );
 
     return res.data;
+  }
+
+  async initiateTransfer(input: {
+    amountKobo: number;
+    recipientCode: string;
+    reference: string;
+    reason: string;
+  }): Promise<PaystackTransfer> {
+    const res = await this.request<PaystackTransfer>("/transfer", {
+      method: "POST",
+      body: {
+        source: "balance",
+        amount: input.amountKobo,
+        recipient: input.recipientCode,
+        reference: input.reference,
+        reason: input.reason,
+        currency: "NGN",
+      },
+    });
+    return res.data;
+  }
+
+  async verifyTransfer(reference: string): Promise<PaystackTransfer | null> {
+    try {
+      const res = await this.request<PaystackTransfer>(
+        `/transfer/verify/${encodeURIComponent(reference)}`
+      );
+      return res.data;
+    } catch (error: any) {
+      if (error instanceof PaystackApiError && error.httpStatus === 404)
+        return null;
+      throw error;
+    }
   }
 }

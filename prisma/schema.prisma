@@ -81,6 +81,7 @@ enum LedgerType {
   HELD_APPIED
   SAVINGS_DEPOSIT
   SAVINGS_WITHDRAWAL
+  PAYOUT_REVERSED
 }
 
 enum SavingsStatus {

@@ -5,9 +5,10 @@ import { PrismaService } from "../../infra/database/database.service";
 import { PaymentConfirmationService } from "../payments/payment-confirmation.service";
 import { Job } from "bullmq";
 import { WebhookStatus } from "../../generated/prisma/enums";
+import { PayoutsService } from "../payouts/payout.service";
 
 interface StoredPayload {
-  data?: { reference?: unknown };
+  data?: { reference?: unknown; transfer_code?: unknown };
 }
 
 @Processor(WEBHOOK_QUEUE)
@@ -16,7 +17,8 @@ export class WebhooksProcessor extends WorkerHost {
 
   constructor(
     private readonly prisma: PrismaService,
-    private readonly confirmation: PaymentConfirmationService
+    private readonly confirmation: PaymentConfirmationService,
+    private readonly payoutService: PayoutsService
   ) {
     super();
   }
@@ -66,6 +68,28 @@ export class WebhooksProcessor extends WorkerHost {
             "Paystack does not show this payment as succcessful yet"
           );
         }
+        return;
+      }
+      case "transfer.success":
+      case "transfer.failed":
+      case "transfer.reversed": {
+        const reference = payload.data?.reference;
+        if (typeof reference !== "string") return;
+        const code = payload.data?.transfer_code;
+
+        const outcome =
+          eventType === "transfer.success"
+            ? "success"
+            : eventType === "transfer.failed"
+              ? "failed"
+              : "reversed";
+
+        const result = await this.payoutService.applyTransferResult(
+          reference,
+          outcome,
+          typeof code === "string" ? code : undefined
+        );
+        this.logger.log(`${eventType} handled: ${result}`);
         return;
       }
       default:
